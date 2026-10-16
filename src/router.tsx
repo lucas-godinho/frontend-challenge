@@ -10,9 +10,10 @@ function AppShell() {
   const pathname = routerState.location.pathname
   const navRef = useRef<HTMLElement>(null)
   const [navWidth, setNavWidth] = useState(390)
+  const navNotchRadius = 44
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
   const navCenter = navWidth / 2
-  const navShape = `M 28 31 H ${navCenter - 35} A 35 35 0 0 0 ${navCenter + 35} 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
+  const navShape = `M 28 31 H ${navCenter - navNotchRadius} A ${navNotchRadius} ${navNotchRadius} 0 0 0 ${navCenter + navNotchRadius} 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
 
   useEffect(() => {
     const nav = navRef.current
