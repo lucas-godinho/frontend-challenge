@@ -88,11 +88,12 @@ function AppShell() {
         style={{ transform: `translateX(${notchCenter - 32.5}px)` }}
         aria-hidden="true"
       />
+      <span className="mobile-nav-action-highlight" aria-hidden="true" />
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? <button
           key={tab.to}
           type="button"
-          className={`mobile-nav-item mobile-nav-action${notchTab === index ? ' is-highlighted' : ''}`}
+          className="mobile-nav-item mobile-nav-action is-highlighted"
           style={{ gridColumn: index + 1 }}
           aria-label="Abrir carteira"
           aria-current={activeTab === index ? 'page' : undefined}
