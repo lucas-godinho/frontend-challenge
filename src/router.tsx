@@ -10,10 +10,12 @@ function AppShell() {
   const pathname = routerState.location.pathname
   const navRef = useRef<HTMLElement>(null)
   const [navWidth, setNavWidth] = useState(390)
-  const navNotchRadius = 44
+  const [hoveredTab, setHoveredTab] = useState<number | null>(null)
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
-  const navCenter = navWidth / 2
-  const navShape = `M 28 31 H ${navCenter - navNotchRadius} A ${navNotchRadius} ${navNotchRadius} 0 0 0 ${navCenter + navNotchRadius} 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
+  const notchTab = hoveredTab ?? (activeTab < 0 ? 2 : activeTab)
+  const notchCenter = navWidth * (notchTab * 0.2 + 0.1)
+  const navNotchRadius = Math.min(44, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
+  const navShape = `M 28 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
 
   useEffect(() => {
     const nav = navRef.current
@@ -51,24 +53,41 @@ function AppShell() {
     <div className="route-transition" key={pathname}><Outlet/></div>
     <nav ref={navRef} className="mobile-nav" aria-label="Navegação mobile">
       <svg className="mobile-nav-shape" viewBox={`0 0 ${navWidth} 126`} preserveAspectRatio="none" aria-hidden="true">
-        <path d={navShape} fill="#241612"/>
+        <defs>
+          <mask id="mobile-nav-mask" x="0" y="0" width={navWidth} height="126" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+            <rect width={navWidth} height="126" fill="black"/>
+            <path d={navShape} fill="white"/>
+            <g className="mobile-nav-cutout" style={{ transform: `translateX(${notchCenter}px)` }}>
+              <circle cx="0" cy="31" r={navNotchRadius} fill="black"/>
+            </g>
+          </mask>
+        </defs>
+        <rect width={navWidth} height="126" fill="#241612" mask="url(#mobile-nav-mask)"/>
       </svg>
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? null : <Link
           key={tab.to}
           to={tab.to}
-          className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}`}
+          className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${notchTab === index ? ' is-highlighted' : ''}`}
           data-tab={tab.to === '/' ? 'home' : tab.to.slice(1)}
           style={{ gridColumn: index + 1 }}
           aria-label={tab.label}
           aria-current={activeTab === index ? 'page' : undefined}
+          onMouseEnter={() => setHoveredTab(index)}
+          onMouseLeave={() => setHoveredTab(null)}
+          onFocus={() => setHoveredTab(index)}
+          onBlur={() => setHoveredTab(null)}
         >{tab.icon}</Link>)}
       </div>
       <Link
         to="/wallets"
-        className={`mobile-nav-item mobile-nav-action${activeTab === 2 ? ' is-active' : ''}`}
+          className={`mobile-nav-item mobile-nav-action${activeTab === 2 ? ' is-active' : ''}${notchTab === 2 ? ' is-highlighted' : ''}`}
         aria-label="Carteira"
         aria-current={activeTab === 2 ? 'page' : undefined}
+        onMouseEnter={() => setHoveredTab(2)}
+        onMouseLeave={() => setHoveredTab(null)}
+        onFocus={() => setHoveredTab(2)}
+        onBlur={() => setHoveredTab(null)}
       >{tabs[2].icon}</Link>
     </nav>
     <footer>
