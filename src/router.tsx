@@ -34,6 +34,9 @@ function AppShell() {
   const centerNotch = navWidth / 2
   const hoverCenter = hoveredTab === null ? null : navWidth * (hoveredTab * 0.2 + 0.1)
   const navNotchRadius = 33
+  const hoverNotchRadius = hoverCenter === null
+    ? navNotchRadius
+    : Math.min(42, Math.max(28, Math.min(hoverCenter - 4, navWidth - hoverCenter - 4)))
   const navShape = `M 28 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
 
   useEffect(() => {
@@ -82,7 +85,7 @@ function AppShell() {
               className="mobile-nav-hover-cutout"
               cx={hoverCenter}
               cy="31"
-              r={navNotchRadius}
+              r={hoverNotchRadius}
               fill="black"
             />}
           </mask>
