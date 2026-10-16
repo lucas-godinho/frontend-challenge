@@ -37,17 +37,30 @@ function AppShell() {
     <div className="route-transition" key={pathname}><Outlet/></div>
     <nav className="mobile-nav" aria-label="Navegação mobile">
       <span className={`mobile-nav-notch${notchTab < 0 ? ' is-hidden' : ''}`} style={notchStyle} aria-hidden="true"/>
-      {tabs.map((tab, index) => <Link
-        key={tab.to}
-        to={tab.to}
-        className={`mobile-nav-item${'action' in tab ? ' mobile-nav-action' : ''}${activeTab === index ? ' is-active' : ''}`}
-        aria-label={tab.label}
-        aria-current={activeTab === index ? 'page' : undefined}
-        onMouseEnter={() => setHoveredTab(index)}
+      <div className="mobile-nav-items">
+        {tabs.map((tab, index) => 'action' in tab ? null : <Link
+          key={tab.to}
+          to={tab.to}
+          className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}`}
+          style={{ gridColumn: index + 1 }}
+          aria-label={tab.label}
+          aria-current={activeTab === index ? 'page' : undefined}
+          onMouseEnter={() => setHoveredTab(index)}
+          onMouseLeave={() => setHoveredTab(null)}
+          onFocus={() => setHoveredTab(index)}
+          onBlur={() => setHoveredTab(null)}
+        >{tab.icon}</Link>)}
+      </div>
+      <Link
+        to="/wallets"
+        className={`mobile-nav-item mobile-nav-action${activeTab === 2 ? ' is-active' : ''}`}
+        aria-label="Carteira"
+        aria-current={activeTab === 2 ? 'page' : undefined}
+        onMouseEnter={() => setHoveredTab(2)}
         onMouseLeave={() => setHoveredTab(null)}
-        onFocus={() => setHoveredTab(index)}
+        onFocus={() => setHoveredTab(2)}
         onBlur={() => setHoveredTab(null)}
-      >{tab.icon}</Link>)}
+      >{tabs[2].icon}</Link>
     </nav>
     <footer>
       <span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span>
