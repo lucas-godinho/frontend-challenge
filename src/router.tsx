@@ -12,7 +12,7 @@ function AppShell() {
   const [navWidth, setNavWidth] = useState(390)
   const [hoveredTab, setHoveredTab] = useState<number | null>(null)
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
-  const notchTab = hoveredTab ?? (activeTab < 0 ? 2 : activeTab)
+  const notchTab = hoveredTab ?? Math.max(activeTab, 0)
   const notchCenter = navWidth * (notchTab * 0.2 + 0.1)
   const navNotchRadius = Math.min(44, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
   const navShape = `M 28 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
@@ -64,6 +64,11 @@ function AppShell() {
         </defs>
         <rect width={navWidth} height="126" fill="#241612" mask="url(#mobile-nav-mask)"/>
       </svg>
+      <span
+        className="mobile-nav-highlight"
+        style={{ transform: `translateX(${notchCenter - 32.5}px)` }}
+        aria-hidden="true"
+      />
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? <button
           key={tab.to}
