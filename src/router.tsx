@@ -79,7 +79,13 @@ function AppShell() {
           <mask id="mobile-nav-mask" x="0" y="0" width={navWidth} height="126" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
             <rect width={navWidth} height="126" fill="black"/>
             <path d={navShape} fill="white"/>
-            <circle cx={centerNotch} cy="31" r={navNotchRadius} fill="black"/>
+            <circle
+              className={`mobile-nav-center-cutout${hoveredTab === 2 ? ' is-hovered' : ''}`}
+              cx={centerNotch}
+              cy="31"
+              r={navNotchRadius}
+              fill="black"
+            />
             {hoverCenter !== null && hoveredTab !== 2 && <circle
               key={hoveredTab}
               className="mobile-nav-hover-cutout"
