@@ -33,7 +33,7 @@ function AppShell() {
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
   const centerNotch = navWidth / 2
   const hoverCenter = hoveredTab === null ? null : navWidth * (hoveredTab * 0.2 + 0.1)
-  const navNotchRadius = 33
+  const navNotchRadius = 42
   const hoverNotchRadius = hoverCenter === null
     ? navNotchRadius
     : Math.min(42, Math.max(28, Math.min(hoverCenter - 4, navWidth - hoverCenter - 4)))
@@ -79,13 +79,7 @@ function AppShell() {
           <mask id="mobile-nav-mask" x="0" y="0" width={navWidth} height="126" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
             <rect width={navWidth} height="126" fill="black"/>
             <path d={navShape} fill="white"/>
-            <circle
-              className={`mobile-nav-center-cutout${hoveredTab === 2 ? ' is-hovered' : ''}`}
-              cx={centerNotch}
-              cy="31"
-              r={navNotchRadius}
-              fill="black"
-            />
+            <circle cx={centerNotch} cy="31" r={navNotchRadius} fill="black"/>
             {hoverCenter !== null && hoveredTab !== 2 && <circle
               key={hoveredTab}
               className="mobile-nav-hover-cutout"
