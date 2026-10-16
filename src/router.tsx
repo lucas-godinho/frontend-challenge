@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter, Outlet, Link, useNavigate, useSearch } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, Outlet, Link, useNavigate, useSearch, useRouterState } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Search, ShoppingBag, UserRound, ArrowUpRight, SlidersHorizontal, Heart, House, Wallet } from 'lucide-react'
 import { useCatalog } from '@/features/catalog/use-catalog'
@@ -6,7 +6,53 @@ import { Button } from '@/components/ui/button'
 import type { CatalogQuery } from '@/types/marketplace'
 
 function AppShell() {
-  return <><a className="skip-link" href="#main">Pular para o conteúdo</a><header className="topbar"><Link to="/" className="wordmark">Kurio<span>®</span></Link><nav aria-label="Principal" className="main-nav"><Link to="/">Descobrir</Link><a href="#curated">Coleções</a><a href="#artists">Artistas</a></nav><div className="top-actions"><Link to="/login" aria-label="Minha conta"><UserRound size={19}/></Link><Link to="/cart" aria-label="Carrinho"><ShoppingBag size={19}/></Link><button className="avatar-button" aria-label="Menu do perfil">K</button></div></header><Outlet/><nav className="mobile-nav" aria-label="Navegação mobile"><Link to="/" aria-label="Início"><House size={18} fill="currentColor"/></Link><Link to="/" aria-label="Explorar"><Heart size={19} fill="currentColor"/></Link><Link className="mobile-nav-action" to="/wallets" aria-label="Carteira"><Wallet size={21}/></Link><Link to="/cart" aria-label="Carrinho"><ShoppingBag size={18} fill="currentColor"/></Link><Link to="/profile" aria-label="Perfil"><UserRound size={18} fill="currentColor"/></Link></nav><footer><span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span></footer></>
+  const routerState = useRouterState()
+  const pathname = routerState.location.pathname
+  const [hoveredTab, setHoveredTab] = useState<number | null>(null)
+  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const notchTab = hoveredTab ?? activeTab
+  const notchStyle = notchTab < 0 ? undefined : { left: `${notchTab * 20 + 10}%` }
+
+  const tabs = [
+    { to: '/', label: 'Início', icon: <House size={18} fill="currentColor"/> },
+    { to: '/favorites', label: 'Favoritos', icon: <Heart size={19} fill="currentColor"/> },
+    { to: '/wallets', label: 'Carteira', icon: <Wallet size={21}/>, action: true },
+    { to: '/cart', label: 'Carrinho', icon: <ShoppingBag size={18} fill="currentColor"/> },
+    { to: '/profile', label: 'Perfil', icon: <UserRound size={18} fill="currentColor"/> },
+  ] as const
+
+  return <>
+    <a className="skip-link" href="#main">Pular para o conteúdo</a>
+    <header className="topbar">
+      <Link to="/" className="wordmark">Kurio<span>®</span></Link>
+      <nav aria-label="Principal" className="main-nav">
+        <Link to="/">Descobrir</Link><a href="#curated">Coleções</a><a href="#artists">Artistas</a>
+      </nav>
+      <div className="top-actions">
+        <Link to="/login" aria-label="Minha conta"><UserRound size={19}/></Link>
+        <Link to="/cart" aria-label="Carrinho"><ShoppingBag size={19}/></Link>
+        <button className="avatar-button" aria-label="Menu do perfil">K</button>
+      </div>
+    </header>
+    <div className="route-transition" key={pathname}><Outlet/></div>
+    <nav className="mobile-nav" aria-label="Navegação mobile">
+      <span className={`mobile-nav-notch${notchTab < 0 ? ' is-hidden' : ''}`} style={notchStyle} aria-hidden="true"/>
+      {tabs.map((tab, index) => <Link
+        key={tab.to}
+        to={tab.to}
+        className={`mobile-nav-item${'action' in tab ? ' mobile-nav-action' : ''}${activeTab === index ? ' is-active' : ''}`}
+        aria-label={tab.label}
+        aria-current={activeTab === index ? 'page' : undefined}
+        onMouseEnter={() => setHoveredTab(index)}
+        onMouseLeave={() => setHoveredTab(null)}
+        onFocus={() => setHoveredTab(index)}
+        onBlur={() => setHoveredTab(null)}
+      >{tab.icon}</Link>)}
+    </nav>
+    <footer>
+      <span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span>
+    </footer>
+  </>
 }
 
 function HomePage() {
@@ -32,7 +78,7 @@ function PlaceholderPage() { return <main id="main" className="page-wrap state-p
 const rootRoute = createRootRoute({ component: AppShell, notFoundComponent: SearchNotFound })
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', validateSearch: (search: Record<string, unknown>): CatalogQuery => ({ q: typeof search.q === 'string' ? search.q : undefined, category: typeof search.category === 'string' ? search.category : undefined, sort: ['recent','price-asc','price-desc'].includes(String(search.sort)) ? search.sort as CatalogQuery['sort'] : 'recent', page: Math.max(1, Number(search.page) || 1) }), component: HomePage })
 const detailRoute = createRoute({ getParentRoute: () => rootRoute, path: '/nft/$nftId', component: PlaceholderPage })
-const placeholderRoutes = ['/cart','/checkout','/login','/register','/profile','/wallets','/orders/$orderId'].map((path) => createRoute({ getParentRoute: () => rootRoute, path, component: PlaceholderPage }))
+const placeholderRoutes = ['/cart','/checkout','/favorites','/login','/register','/profile','/wallets','/orders/$orderId'].map((path) => createRoute({ getParentRoute: () => rootRoute, path, component: PlaceholderPage }))
 const routeTree = rootRoute.addChildren([indexRoute, detailRoute, ...placeholderRoutes])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 0 })
 
