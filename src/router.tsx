@@ -39,6 +39,7 @@ function AppShell() {
           key={tab.to}
           to={tab.to}
           className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}`}
+          data-tab={tab.to === '/' ? 'home' : tab.to.slice(1)}
           style={{ gridColumn: index + 1 }}
           aria-label={tab.label}
           aria-current={activeTab === index ? 'page' : undefined}
