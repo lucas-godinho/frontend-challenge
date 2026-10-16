@@ -15,7 +15,7 @@ const swatches = [
 function ThemePreview() {
   return <main className="grid max-w-3xl gap-8 bg-background p-8 text-foreground">
     <section>
-      <p className="text-xs uppercase tracking-[.15em] text-accent">GreenMint · sistema visual</p>
+      <p className="text-xs uppercase tracking-[.15em] text-accent">Kurio · sistema visual</p>
       <h1 className="mt-3 font-display text-3xl font-bold uppercase">Arte para colecionar</h1>
       <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Paleta quente e tipografia monoespaçada extraídas do frame mobile de início no Figma.</p>
     </section>
@@ -37,7 +37,7 @@ function ThemePreview() {
   </main>
 }
 
-const meta = { title: 'Design system/GreenMint theme', component: ThemePreview, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof ThemePreview>
+const meta = { title: 'Design system/Kurio theme', component: ThemePreview, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof ThemePreview>
 export default meta
 type Story = StoryObj<typeof meta>
 export const Overview: Story = {}

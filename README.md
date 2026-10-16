@@ -1,4 +1,4 @@
-# Forma — NFT Marketplace
+# Kurio — NFT Marketplace
 
 Implementação inicial do desafio definido em [CHALLENGE.md](CHALLENGE.md). O projeto usa React 19, TypeScript estrito, TanStack Router/Query, Axios, Tailwind CSS, MSW, Storybook, Playwright, Socket.IO Client e Lighthouse.
 
@@ -48,7 +48,7 @@ O primeiro uso do Playwright pode exigir `npx playwright install chromium`. Rela
 
 O catálogo suporta sucesso, resultado vazio por busca e recurso inexistente. Latência e injeção determinística de falhas, sessão expirada, conflito, cupons, mudanças de preço, timeout idempotente e pagamento confirmado/recusado ainda precisam entrar nos handlers MSW. A configuração `VITE_MOCK_SCENARIO` está reservada, mas ainda não altera os mocks.
 
-A rota `/` lê busca, ordenação, categoria e página da URL; detalhe tem acesso direto e as rotas restantes estão registradas como placeholders. O arquivo Figma está acessível em modo de visualização. Os tokens iniciais do tema já refletem o fundo Ink, a tipografia monoespaçada e os acentos quentes observados; assets e composição da home ainda precisam ser integrados.
+A rota `/` lê busca, ordenação, categoria e página da URL; detalhe tem acesso direto e as rotas restantes estão registradas como placeholders. O arquivo Figma está acessível em modo de visualização. O tema Kurio aplica os tokens e a estrutura mobile exportados pelo Figma; como o CSS não inclui as imagens vinculadas, a tela usa as imagens temporárias das fixtures até receber os assets originais.
 
 ## Deploy
 
