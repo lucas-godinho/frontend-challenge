@@ -8,10 +8,7 @@ import type { CatalogQuery } from '@/types/marketplace'
 function AppShell() {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
-  const [hoveredTab, setHoveredTab] = useState<number | null>(null)
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
-  const notchTab = hoveredTab ?? activeTab
-  const notchStyle = notchTab < 0 ? undefined : { left: `${notchTab * 20 + 10}%` }
 
   const tabs = [
     { to: '/', label: 'Início', icon: <House size={18} fill="currentColor"/> },
@@ -36,7 +33,7 @@ function AppShell() {
     </header>
     <div className="route-transition" key={pathname}><Outlet/></div>
     <nav className="mobile-nav" aria-label="Navegação mobile">
-      <span className={`mobile-nav-notch${notchTab < 0 ? ' is-hidden' : ''}`} style={notchStyle} aria-hidden="true"/>
+      <span className="mobile-nav-notch" aria-hidden="true"/>
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? null : <Link
           key={tab.to}
@@ -45,10 +42,6 @@ function AppShell() {
           style={{ gridColumn: index + 1 }}
           aria-label={tab.label}
           aria-current={activeTab === index ? 'page' : undefined}
-          onMouseEnter={() => setHoveredTab(index)}
-          onMouseLeave={() => setHoveredTab(null)}
-          onFocus={() => setHoveredTab(index)}
-          onBlur={() => setHoveredTab(null)}
         >{tab.icon}</Link>)}
       </div>
       <Link
@@ -56,10 +49,6 @@ function AppShell() {
         className={`mobile-nav-item mobile-nav-action${activeTab === 2 ? ' is-active' : ''}`}
         aria-label="Carteira"
         aria-current={activeTab === 2 ? 'page' : undefined}
-        onMouseEnter={() => setHoveredTab(2)}
-        onMouseLeave={() => setHoveredTab(null)}
-        onFocus={() => setHoveredTab(2)}
-        onBlur={() => setHoveredTab(null)}
       >{tabs[2].icon}</Link>
     </nav>
     <footer>
