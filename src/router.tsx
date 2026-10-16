@@ -31,9 +31,9 @@ function AppShell() {
   const [navWidth, setNavWidth] = useState(390)
   const [hoveredTab, setHoveredTab] = useState<number | null>(null)
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
-  const notchTab = hoveredTab ?? Math.max(activeTab, 0)
+  const notchTab = hoveredTab ?? 2
   const notchCenter = navWidth * (notchTab * 0.2 + 0.1)
-  const navNotchRadius = Math.min(44, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
+  const navNotchRadius = Math.min(33, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
   const navShape = `M 28 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
 
   useEffect(() => {
@@ -105,7 +105,7 @@ function AppShell() {
         >{tab.icon}</button> : <Link
           key={tab.to}
           to={tab.to}
-          className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${notchTab === index ? ' is-highlighted' : ''}`}
+          className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${hoveredTab === index ? ' is-highlighted' : ''}`}
           data-tab={tab.to === '/' ? 'home' : tab.to.slice(1)}
           style={{ gridColumn: index + 1 }}
           aria-label={tab.label}
