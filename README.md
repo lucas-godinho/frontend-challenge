@@ -48,7 +48,7 @@ O primeiro uso do Playwright pode exigir `npx playwright install chromium`. Rela
 
 O catálogo suporta sucesso, resultado vazio por busca e recurso inexistente. Latência e injeção determinística de falhas, sessão expirada, conflito, cupons, mudanças de preço, timeout idempotente e pagamento confirmado/recusado ainda precisam entrar nos handlers MSW. A configuração `VITE_MOCK_SCENARIO` está reservada, mas ainda não altera os mocks.
 
-A rota `/` lê busca, ordenação, categoria e página da URL; detalhe tem acesso direto e as rotas restantes estão registradas como placeholders. A tela inicial é apenas o primeiro corte visual: o link do Figma não abriu no navegador conectado, por isso assets e composição não foram comparados.
+A rota `/` lê busca, ordenação, categoria e página da URL; detalhe tem acesso direto e as rotas restantes estão registradas como placeholders. O arquivo Figma está acessível em modo de visualização. Os tokens iniciais do tema já refletem o fundo Ink, a tipografia monoespaçada e os acentos quentes observados; assets e composição da home ainda precisam ser integrados.
 
 ## Deploy
 

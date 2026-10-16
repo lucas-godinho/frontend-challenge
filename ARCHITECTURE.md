@@ -40,7 +40,9 @@ O escopo inicial inclui o cliente Socket.IO, mas ainda não implementa o transpo
 
 ## Fidelidade visual e acessibilidade
 
-O Figma não ficou acessível no ambiente durante o bootstrap. A home usa uma composição temporária original e imagens remotas de demonstração; substituir por assets locais e tokens extraídos do Figma antes da avaliação de fidelidade. Estados incluem loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida.
+O Figma está em modo de visualização. A base do tema usa o token confirmado `Color/Ink #140D0A`, o nome GreenMint, o frame mobile de 414 × 896 px, padding lateral de 24 px e gap de 16 px. Fundo marrom, superfícies, texto marfim e laranja seguem a paleta vista no frame; os tons derivados são aproximações visuais e devem ser comparados com as variáveis/color styles restantes do arquivo. A tipografia local Space Mono segue o tratamento monoespaçado observado.
+
+A home mantém uma composição temporária e imagens de demonstração, sem os assets originais do Figma. Estados incluem loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida.
 
 ## Limite do bootstrap
 
