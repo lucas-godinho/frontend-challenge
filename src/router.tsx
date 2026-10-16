@@ -1,5 +1,5 @@
 import { createRootRoute, createRoute, createRouter, Outlet, Link, useNavigate, useSearch, useRouterState } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Search, ShoppingBag, UserRound, ArrowUpRight, SlidersHorizontal, Heart, House, Wallet } from 'lucide-react'
 import { useCatalog } from '@/features/catalog/use-catalog'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,23 @@ import type { CatalogQuery } from '@/types/marketplace'
 function AppShell() {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
+  const navRef = useRef<HTMLElement>(null)
+  const [navWidth, setNavWidth] = useState(390)
   const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const navCenter = navWidth / 2
+  const navShape = `M 28 31 H ${navCenter - 35} A 35 35 0 0 0 ${navCenter + 35} 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
+
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (nav.clientWidth > 0) setNavWidth(nav.clientWidth)
+    })
+
+    resizeObserver.observe(nav)
+    return () => resizeObserver.disconnect()
+  }, [])
 
   const tabs = [
     { to: '/', label: 'Início', icon: <House size={18} fill="currentColor"/> },
@@ -32,8 +48,10 @@ function AppShell() {
       </div>
     </header>
     <div className="route-transition" key={pathname}><Outlet/></div>
-    <nav className="mobile-nav" aria-label="Navegação mobile">
-      <span className="mobile-nav-notch" aria-hidden="true"/>
+    <nav ref={navRef} className="mobile-nav" aria-label="Navegação mobile">
+      <svg className="mobile-nav-shape" viewBox={`0 0 ${navWidth} 126`} preserveAspectRatio="none" aria-hidden="true">
+        <path d={navShape} fill="#241612"/>
+      </svg>
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? null : <Link
           key={tab.to}
