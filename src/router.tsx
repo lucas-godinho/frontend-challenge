@@ -11,7 +11,7 @@ function AppShell() {
   const navRef = useRef<HTMLElement>(null)
   const [navWidth, setNavWidth] = useState(390)
   const [hoveredTab, setHoveredTab] = useState<number | null>(null)
-  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
   const notchTab = hoveredTab ?? (activeTab < 0 ? 2 : activeTab)
   const notchCenter = navWidth * (notchTab * 0.2 + 0.1)
   const navNotchRadius = Math.min(44, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
@@ -79,16 +79,12 @@ function AppShell() {
           onBlur={() => setHoveredTab(null)}
         >{tab.icon}</Link>)}
       </div>
-      <Link
-        to="/wallets"
-          className={`mobile-nav-item mobile-nav-action${activeTab === 2 ? ' is-active' : ''}${notchTab === 2 ? ' is-highlighted' : ''}`}
-        aria-label="Carteira"
-        aria-current={activeTab === 2 ? 'page' : undefined}
-        onMouseEnter={() => setHoveredTab(2)}
-        onMouseLeave={() => setHoveredTab(null)}
-        onFocus={() => setHoveredTab(2)}
-        onBlur={() => setHoveredTab(null)}
-      >{tabs[2].icon}</Link>
+      <button
+        type="button"
+        disabled
+        className="mobile-nav-item mobile-nav-action"
+        aria-label="Carteira indisponível"
+      >{tabs[2].icon}</button>
     </nav>
     <footer>
       <span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span>

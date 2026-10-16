@@ -206,7 +206,7 @@ footer .wordmark { color: var(--foreground); }
   .mobile-nav-shape { position: absolute; z-index: 0; inset: 0; width: 100%; height: 126px; overflow: visible; filter: drop-shadow(0 -10px 15px rgb(10 6 4 / 45%)); pointer-events: none; }
   .mobile-nav-cutout { transform-box: view-box; transform-origin: 0 0; transition: transform 620ms cubic-bezier(.22,.8,.25,1); }
   .mobile-nav-items { position: absolute; z-index: 2; inset: 0; padding: 68px 0 20px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; }
-  .mobile-nav-item { position: relative; z-index: 2; width: 100%; height: 40px; display: grid; place-items: center; color: #cfb28c; transition: color 620ms cubic-bezier(.22,.8,.25,1); }
+  .mobile-nav-item { position: relative; z-index: 2; width: 100%; height: 40px; padding: 0; display: grid; place-items: center; border: 0; background: transparent; color: #cfb28c; transition: color 620ms cubic-bezier(.22,.8,.25,1); }
   .mobile-nav-item.is-highlighted { color: var(--accent); }
   .mobile-nav-item svg { transition: transform 620ms cubic-bezier(.22,.8,.25,1), filter 620ms cubic-bezier(.22,.8,.25,1); }
   .mobile-nav-item.is-highlighted svg { transform: translateY(-54px) scale(1.12); filter: drop-shadow(0 2px 5px rgb(232 155 85 / 28%)); }
@@ -218,8 +218,9 @@ footer .wordmark { color: var(--foreground); }
   @keyframes nav-heart-select { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-58px) scale(1.3) rotate(-10deg); } 68% { transform: translateY(-52px) scale(.94) rotate(4deg); } 100% { transform: translateY(-54px) scale(1.12) rotate(0); } }
   @keyframes nav-cart-select { 0% { transform: translateY(0) scale(1); } 32% { transform: translateY(-62px) rotate(-8deg); } 62% { transform: translateY(-52px) rotate(4deg); } 100% { transform: translateY(-54px) scale(1.12) rotate(0); } }
   @keyframes nav-profile-select { 0% { transform: translateY(0) scale(.88); } 42% { transform: translateY(-60px) scale(1.18); } 70% { transform: translateY(-53px) scale(1.05); } 100% { transform: translateY(-54px) scale(1.12); } }
-  .mobile-nav-action { position: absolute; z-index: 3; top: 0; left: 50%; width: 65px; height: 65px; border: 0; border-radius: 50%; background: linear-gradient(180deg, rgb(210 138 76 / 40%), #d28a4c); color: var(--foreground); box-shadow: 0 5px 16px rgb(0 0 0 / 30%); transform: translateX(-50%); }
+  .mobile-nav-action { position: absolute; z-index: 3; top: 0; left: 50%; width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(180deg, rgb(210 138 76 / 40%), #d28a4c); color: var(--foreground); box-shadow: 0 5px 16px rgb(0 0 0 / 30%); font: inherit; transform: translateX(-50%); }
   .mobile-nav-action.is-highlighted { color: var(--foreground); transform: translateX(-50%) scale(1.06); }
+  .mobile-nav-action:disabled { opacity: .5; cursor: not-allowed; }
   .newsletter { margin: 0 -20px; padding: 35px 20px; display: block; }
   .newsletter h2 { font-size: 28px; }
   .newsletter > p { margin-top: 20px; }
