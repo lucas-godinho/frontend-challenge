@@ -25,11 +25,12 @@ function CenterActionIcon() {
 
 function AppShell() {
   const routerState = useRouterState()
+  const navigate = useNavigate()
   const pathname = routerState.location.pathname
   const navRef = useRef<HTMLElement>(null)
   const [navWidth, setNavWidth] = useState(390)
   const [hoveredTab, setHoveredTab] = useState<number | null>(null)
-  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
   const notchTab = hoveredTab ?? Math.max(activeTab, 0)
   const notchCenter = navWidth * (notchTab * 0.2 + 0.1)
   const navNotchRadius = Math.min(44, Math.max(24, Math.min(notchCenter - 4, navWidth - notchCenter - 4)))
@@ -91,10 +92,15 @@ function AppShell() {
         {tabs.map((tab, index) => 'action' in tab ? <button
           key={tab.to}
           type="button"
-          disabled
-          className="mobile-nav-item mobile-nav-disabled"
+          className={`mobile-nav-item mobile-nav-action${notchTab === index ? ' is-highlighted' : ''}`}
           style={{ gridColumn: index + 1 }}
-          aria-label="Ação indisponível"
+          aria-label="Abrir carteira"
+          aria-current={activeTab === index ? 'page' : undefined}
+          onClick={() => void navigate({ to: tab.to })}
+          onMouseEnter={() => setHoveredTab(index)}
+          onMouseLeave={() => setHoveredTab(null)}
+          onFocus={() => setHoveredTab(index)}
+          onBlur={() => setHoveredTab(null)}
         >{tab.icon}</button> : <Link
           key={tab.to}
           to={tab.to}
