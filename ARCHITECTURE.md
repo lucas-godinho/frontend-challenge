@@ -40,7 +40,7 @@ O escopo inicial inclui o cliente Socket.IO, mas ainda não implementa o transpo
 
 ## Fidelidade visual e acessibilidade
 
-O Figma está em modo de visualização. A home mobile Kurio segue o frame de 414 × 896 px, padding superior/lateral de 40/24 px e gap de 16 px. O CSS exportado confirmou Ink `#140D0A`, Surface Card `#241612`, Surface Raised `#2F1D15`, Border `#3F2319`, Secondary `#B39463`, Text Secondary `#CFB28C`, Foreground `#F5F1EB`, Primary `#D28A4C` e Accent `#E89B55`. A tipografia instalada é Space Mono, visualmente próxima da Roboto Mono nomeada no export; as artes do Figma não vieram no CSS e a home ainda usa imagens abstratas das fixtures.
+O Figma está em modo de visualização. A home mobile Kurio segue o frame de 414 × 896 px, padding superior/lateral de 40/24 px e gap de 16 px. O CSS exportado confirmou Ink `#140D0A`, Surface Card `#241612`, Surface Raised `#2F1D15`, Border `#3F2319`, Secondary `#B39463`, Text Secondary `#CFB28C`, Foreground `#F5F1EB`, Primary `#D28A4C` e Accent `#E89B55`. Roboto Mono é servida localmente via Fontsource. As referências de imagens no CSS vieram sem os arquivos vinculados, então a home ainda usa imagens temporárias das fixtures.
 
 A home mantém uma composição temporária e imagens de demonstração, sem os assets originais do Figma. Estados incluem loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida.
 

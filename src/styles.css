@@ -1,5 +1,6 @@
-@import "@fontsource/space-mono/latin-400.css";
-@import "@fontsource/space-mono/latin-700.css";
+@import "@fontsource/roboto-mono/latin-400.css";
+@import "@fontsource/roboto-mono/latin-500.css";
+@import "@fontsource/roboto-mono/latin-700.css";
 @import "tailwindcss";
 
 @theme inline {
@@ -58,8 +59,8 @@
   --border: #3f2319;
   --input: #241612;
   --ring: #e89b55;
-  --font-body: "Space Mono", ui-monospace, monospace;
-  --font-display-family: "Space Mono", ui-monospace, monospace;
+  --font-body: "Roboto Mono", ui-monospace, monospace;
+  --font-display-family: "Roboto Mono", ui-monospace, monospace;
   --radius: 0.75rem;
 
   /* Layout values observed on the Figma mobile frame. */
@@ -156,52 +157,54 @@ footer .wordmark { color: var(--foreground); }
   .page-wrap { padding: 40px var(--space-frame-inline) 20px; }
   .mobile-search-row { display: flex; align-items: center; gap: 8px; height: 45px; }
   .mobile-search-row .search-box { height: 45px; padding: 0 12px; border: 0; border-radius: 10px; background: #241612; }
-  .mobile-search-row .search-box input { font-size: 11px; font-weight: 700; }
+  .mobile-search-row .search-box input { font-size: 14px; font-weight: 700; }
   .mobile-search-row .search-box input::placeholder { color: #b39463; opacity: 1; }
   .mobile-search-row .search-box svg { flex: none; color: #b39463; }
   .mobile-filter { position: relative; width: 45px; height: 45px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 14px; background: linear-gradient(137deg, rgb(210 138 76 / 45%), #d28a4c); color: var(--background); }
   .mobile-filter select { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
   .hero { position: relative; min-height: 0; height: 190px; margin-top: 12px; padding: 16px; display: block; overflow: hidden; border-radius: 30px; background: linear-gradient(105deg, rgb(210 138 76 / 20%), rgb(210 138 76 / 10%)), #241612; }
   .hero:before { position: absolute; inset: 0; background: radial-gradient(ellipse 150px 180px at 21% 47%, rgb(221 154 95 / 34%), transparent 75%), radial-gradient(ellipse 160px 170px at 75% 54%, rgb(221 154 95 / 27%), transparent 76%); content: ""; }
-  .hero-copy { position: relative; z-index: 2; width: 59%; }
-  .hero .eyebrow { margin: 0 0 4px; color: var(--foreground); font-size: 9px; font-weight: 500; letter-spacing: 0; text-transform: none; }
-  .hero h1 { font-size: 14px; line-height: 1.55; letter-spacing: 0; }
+  .hero-copy { position: relative; z-index: 2; width: 56.3%; }
+  .hero .eyebrow { margin: 0 0 4px; color: var(--foreground); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+  .hero h1 { font-size: 18px; line-height: 1.6; letter-spacing: 0; }
   .hero h1 em { color: var(--foreground); }
-  .hero-description { max-width: 150px; margin: 5px 0 2px; color: var(--muted-foreground); font-size: 9px; line-height: 1.55; }
-  .hero .button { height: auto; padding: 0; gap: 6px; background: transparent; color: var(--primary); font-size: 9px; }
+  .hero-description { max-width: 150px; margin: 5px 0 2px; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+  .hero .button { height: auto; padding: 0; gap: 6px; background: transparent; color: var(--primary); font-size: 12px; }
   .hero-art { position: absolute; inset: 0; height: auto; background: transparent; }
   .hero-art:before { display: none; }
   .hero-art-main, .hero-art-secondary { position: absolute; z-index: 1; display: block; object-fit: cover; border-radius: 14px; }
-  .hero-art-main { top: 8px; right: 12px; width: 38%; height: 106px; }
-  .hero-art-secondary { right: 62px; bottom: 18px; width: 16%; height: 48px; border: 2px solid #241612; }
+  .hero-art-main { top: 2.6%; left: 53.6%; width: 37.7%; height: auto; aspect-ratio: 1; }
+  .hero-art-secondary { top: 49%; left: 57.4%; width: 15.8%; height: auto; aspect-ratio: 1; border: 2px solid #241612; }
   .hero-art .art-circle { display: none; }
   .hero-art .art-index { display: none; }
   .hero-dots { position: absolute; z-index: 3; right: 50%; bottom: 6px; display: flex; gap: 5px; transform: translateX(50%); }
-  .hero-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+  .hero-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
   .catalog-section { padding: 0 0 28px; border: 0; }
   .section-heading { display: none; }
   .catalog-tabs { display: flex; gap: 5px; margin: 0 0 16px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
   .catalog-tabs::-webkit-scrollbar { display: none; }
-  .catalog-tabs button { position: relative; padding: 0 0 5px; border: 0; background: none; color: var(--foreground); font-size: 10px; }
+  .catalog-tabs button { position: relative; padding: 0 0 5px; border: 0; background: none; color: var(--foreground); font-size: 14px; }
   .catalog-tabs button.active { color: var(--accent); font-weight: 700; }
   .catalog-tabs button.active:after { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--primary); content: ""; }
   .desktop-catalog-tools { display: none; }
   .nft-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 24px 16px; }
   .nft-card:nth-child(even) { margin-top: 16px; }
-  .nft-image-wrap { aspect-ratio: 1 / 1.14; padding: 6px; border: 0; border-radius: 20px; background: linear-gradient(143deg, #241612, #2f1d15); }
+  .nft-image-wrap { aspect-ratio: 175 / 200; padding: 12px 4px 20px; border: 0; border-radius: 20px; background: linear-gradient(143deg, #241612, #2f1d15); }
   .nft-image-wrap img { border-radius: 15px; }
+  .nft-card:nth-child(even) .nft-image-wrap { padding-top: 20px; padding-bottom: 12px; }
   .edition-tag { top: 8px; left: 8px; font-size: 7px; }
   .heart-tag { top: 8px; right: 8px; width: 27px; height: 27px; border-color: var(--border); background: var(--secondary); }
   .nft-meta { display: block; padding: 7px 5px 0; }
   .nft-collection { display: none; }
-  .nft-meta h3 { margin: 0; overflow: hidden; font-size: 10px; font-weight: 400; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; text-transform: none; }
+  .nft-meta h3 { margin: 0; overflow: hidden; font-size: 15px; font-weight: 400; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; text-transform: none; }
   .price { margin: 0; text-align: left; }
   .price span { display: none; }
-  .price strong { color: var(--accent); font-size: 11px; }
-  .mobile-nav { position: fixed; z-index: 10; right: 15px; bottom: 0; left: 15px; height: 72px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; border-radius: 28px 28px 0 0; background: #241612; color: #cfb28c; }
+  .price strong { color: var(--accent); font-size: 16px; line-height: 16px; }
+  .mobile-nav { position: fixed; z-index: 10; right: 15px; bottom: 0; left: 15px; height: 126px; padding: 70px 32px 25px; display: flex; align-items: center; justify-content: space-between; color: #cfb28c; }
+  .mobile-nav::before { position: absolute; z-index: -1; inset: 31px 0 0; border-radius: 28px 28px 0 0; background: #241612; box-shadow: 0 -10px 30px rgb(10 6 4 / 45%); content: ""; }
   .mobile-nav > a { display: grid; place-items: center; }
   .mobile-nav > a:first-child { color: var(--primary); }
-  .mobile-nav-action { width: 52px; height: 52px; margin-top: -27px; border: 5px solid var(--background); border-radius: 50%; background: linear-gradient(145deg, #d99a5f, #d28a4c); color: var(--foreground); box-shadow: 0 5px 16px rgb(0 0 0 / 30%); }
+  .mobile-nav-action { position: absolute; top: 0; left: 50%; width: 65px; height: 65px; border: 5px solid var(--background); border-radius: 50%; background: linear-gradient(180deg, rgb(210 138 76 / 40%), #d28a4c); color: var(--foreground); box-shadow: 0 5px 16px rgb(0 0 0 / 30%); transform: translateX(-50%); }
   .newsletter { margin: 0 -20px; padding: 35px 20px; display: block; }
   .newsletter h2 { font-size: 28px; }
   .newsletter > p { margin-top: 20px; }
@@ -210,9 +213,7 @@ footer .wordmark { color: var(--foreground); }
 @media (max-width: 390px) {
   .mobile-search-row { gap: 8px; }
   .hero-copy { width: 60%; }
-  .hero-art-main { width: 36%; }
-  .hero h1 { font-size: 29px; }
-  .hero h1 { font-size: 14px; }
+  .hero-copy { width: 56.3%; }
   .catalog-tabs { gap: 7px; }
   .nft-grid { gap: 24px 14px; }
 }
