@@ -65,7 +65,14 @@ function AppShell() {
         <rect width={navWidth} height="126" fill="#241612" mask="url(#mobile-nav-mask)"/>
       </svg>
       <div className="mobile-nav-items">
-        {tabs.map((tab, index) => 'action' in tab ? null : <Link
+        {tabs.map((tab, index) => 'action' in tab ? <button
+          key={tab.to}
+          type="button"
+          disabled
+          className="mobile-nav-item mobile-nav-disabled"
+          style={{ gridColumn: index + 1 }}
+          aria-label="Carteira indisponível"
+        >{tab.icon}</button> : <Link
           key={tab.to}
           to={tab.to}
           className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${notchTab === index ? ' is-highlighted' : ''}`}
@@ -79,12 +86,6 @@ function AppShell() {
           onBlur={() => setHoveredTab(null)}
         >{tab.icon}</Link>)}
       </div>
-      <button
-        type="button"
-        disabled
-        className="mobile-nav-item mobile-nav-action"
-        aria-label="Carteira indisponível"
-      >{tabs[2].icon}</button>
     </nav>
     <footer>
       <span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span>
