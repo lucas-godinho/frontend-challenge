@@ -1,0 +1,25 @@
+<svg width="600" height="680" viewBox="0 0 600 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="night" x1="54" y1="38" x2="540" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38231B"/>
+      <stop offset=".54" stop-color="#152D2B"/>
+      <stop offset="1" stop-color="#101519"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="0" cy="0" r="1" gradientTransform="matrix(0 260 -250 0 330 282)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D28A4C" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#D28A4C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="187" y1="540" x2="422" y2="202" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CFB28C"/>
+      <stop offset="1" stop-color="#E89B55"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="680" fill="url(#night)"/>
+  <rect width="600" height="680" fill="url(#moon)"/>
+  <circle cx="455" cy="143" r="50" fill="#F5F1EB" fill-opacity=".8"/>
+  <circle cx="455" cy="143" r="68" stroke="#F5F1EB" stroke-opacity=".24" stroke-width="2"/>
+  <path d="M288 680c-8-97 7-193 46-284 35-83 92-149 170-201-42 73-61 144-56 214 5 70 34 130 86 180v91H288Z" fill="#19332F"/>
+  <path d="M310 680c-4-107 3-214 24-320 14-69 36-123 68-163-13 74-14 141-4 202 12 73 41 139 97 198v83H310Z" fill="url(#leaf)" fill-opacity=".8"/>
+  <path d="M320 660c39-149 78-276 117-381M353 544c-42-34-83-53-125-58m166-71c38-28 77-42 118-43" stroke="#F5F1EB" stroke-opacity=".55" stroke-width="4" stroke-linecap="round"/>
+  <path d="M154 191h5m116-93h4m-85 171h4m258 86h5M79 370h4m126 207h4m303-160h4" stroke="#F5F1EB" stroke-opacity=".72" stroke-width="6" stroke-linecap="round"/>
+</svg>

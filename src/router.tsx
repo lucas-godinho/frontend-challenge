@@ -1,5 +1,5 @@
 import { createRootRoute, createRoute, createRouter, Outlet, Link, useNavigate, useSearch, useRouterState } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
 import { Search, ShoppingBag, UserRound, ArrowUpRight, SlidersHorizontal, Heart, House } from 'lucide-react'
 import { useCatalog } from '@/features/catalog/use-catalog'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,13 @@ function CartIcon() {
     <path d="M14.4118 16.6667C14.8855 16.6667 15.2696 16.2898 15.2696 15.8249C15.2696 15.36 14.8855 14.9832 14.4118 14.9832C13.938 14.9832 13.5539 15.36 13.5539 15.8249C13.5539 16.2898 13.938 16.6667 14.4118 16.6667Z" fill="currentColor"/>
     <path d="M5.83333 16.6667C6.30711 16.6667 6.69118 16.2898 6.69118 15.8249C6.69118 15.36 6.30711 14.9832 5.83333 14.9832C5.35956 14.9832 4.97549 15.36 4.97549 15.8249C4.97549 16.2898 5.35956 16.6667 5.83333 16.6667Z" fill="currentColor"/>
   </svg>
+}
+
+function handleArtworkError(event: SyntheticEvent<HTMLImageElement>) {
+  const image = event.currentTarget
+  if (image.dataset.fallbackApplied) return
+  image.dataset.fallbackApplied = 'true'
+  image.src = '/images/artwork-fallback.svg'
 }
 
 function CenterActionIcon() {
@@ -160,22 +167,24 @@ function HomePage() {
   const [draft, setDraft] = useState(search.q ?? '')
   const [activeTab, setActiveTab] = useState<'all' | 'new' | 'trending'>('all')
   const [activeSlide, setActiveSlide] = useState(0)
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false)
   const catalog = useCatalog(search)
+  const featuredCatalog = useCatalog({ sort: 'recent', page: 1 })
   const currentSlide = heroSlides[activeSlide]!
-  const slideItems = catalog.data?.items ?? []
+  const slideItems = featuredCatalog.data?.items ?? []
   const firstArtwork = slideItems.length > 0 ? slideItems[(activeSlide * 2) % slideItems.length] : undefined
   const secondArtwork = slideItems.length > 1 ? slideItems[(activeSlide * 2 + 1) % slideItems.length] : firstArtwork
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (isCarouselPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const timer = window.setInterval(() => setActiveSlide((slide) => (slide + 1) % heroSlides.length), 5000)
     return () => window.clearInterval(timer)
-  }, [])
+  }, [isCarouselPaused])
 
   const update = (next: Partial<CatalogQuery>) => void navigate({ search: (current: CatalogQuery) => ({ ...current, ...next, page: 1 }), replace: false })
   return <main id="main" className="page-wrap">
     <div className="mobile-search-row"><form className="search-box" onSubmit={(event) => { event.preventDefault(); update({ q: draft || undefined }) }}><Search size={18}/><input aria-label="Buscar NFTs" placeholder="Explorar coleções" value={draft} onChange={(e) => setDraft(e.target.value)}/></form><label className="mobile-filter"><SlidersHorizontal size={19}/><span className="sr-only">Ordenar NFTs</span><select aria-label="Ordenar NFTs" value={search.sort ?? 'recent'} onChange={(e) => update({ sort: e.target.value as CatalogQuery['sort'] })}><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label></div>
-    <section className="hero" aria-roledescription="carousel" aria-label="Destaques da Kurio">
+    <section className="hero" aria-roledescription="carousel" aria-label="Destaques da Kurio" onMouseEnter={() => setIsCarouselPaused(true)} onMouseLeave={() => setIsCarouselPaused(false)} onFocusCapture={() => setIsCarouselPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsCarouselPaused(false) }}>
       <img className="hero-background" src="/images/hero-background.svg" alt="" aria-hidden="true"/>
       <div className="hero-copy" key={`copy-${activeSlide}`}>
         <p className="eyebrow">{currentSlide.eyebrow}</p>
@@ -184,18 +193,18 @@ function HomePage() {
         <a className="button button-light" href="#catalog">{currentSlide.action} <ArrowUpRight size={16}/></a>
       </div>
       <div className="hero-art" role="group" aria-label={`Obras em destaque, slide ${activeSlide + 1} de ${heroSlides.length}`}>
-        {firstArtwork && <img key={`${activeSlide}-main`} className="hero-art-main" src={firstArtwork.image} alt={firstArtwork.name}/>}
-        {secondArtwork && <img key={`${activeSlide}-secondary`} className="hero-art-secondary" src={secondArtwork.image} alt={secondArtwork.name}/>}
+        {firstArtwork && <img key={`${activeSlide}-main`} className="hero-art-main" src={firstArtwork.image} alt={firstArtwork.name} onError={handleArtworkError}/>}
+        {secondArtwork && <img key={`${activeSlide}-secondary`} className="hero-art-secondary" src={secondArtwork.image} alt={secondArtwork.name} onError={handleArtworkError}/>}
         <div className="art-circle"/><span className="art-index">{String(activeSlide + 1).padStart(2, '0')} — 03</span>
       </div>
       <div className="hero-dots" aria-label="Escolher destaque">
         {heroSlides.map((slide, index) => <button key={slide.eyebrow} type="button" aria-label={`Mostrar slide ${index + 1}: ${slide.eyebrow}`} aria-current={activeSlide === index ? 'true' : undefined} onClick={() => setActiveSlide(index)}><span/></button>)}
       </div>
     </section>
-    <section className="catalog-section" id="catalog"><div className="section-heading"><div><p className="eyebrow">Curadoria da semana</p><h2>Descubra NFTs</h2></div><button className="text-button" onClick={() => update({ category: undefined, sort: 'recent', q: undefined })}>Ver tudo <ArrowUpRight size={15}/></button></div>
-      <div className="catalog-tabs" role="tablist" aria-label="Categorias de NFTs">{([['all','Todos os NFTs'],['new','Novos lançamentos'],['trending','Em alta']] as const).map(([key,label]) => <button key={key} role="tab" aria-selected={activeTab === key} className={activeTab === key ? 'active' : ''} onClick={() => { setActiveTab(key); update({ sort: key === 'trending' ? 'price-desc' : 'recent' }) }}>{label}</button>)}</div>
+    <section className="catalog-section" id="catalog" aria-labelledby="catalog-title"><div className="section-heading" id="curated"><div><p className="eyebrow">Curadoria da semana</p><h2 id="catalog-title">Descubra NFTs</h2></div><button className="text-button" onClick={() => update({ category: undefined, sort: 'recent', q: undefined })}>Ver tudo <ArrowUpRight size={15}/></button></div>
+      <div className="catalog-tabs" role="group" aria-label="Filtrar NFTs">{([['all','Todos os NFTs'],['new','Novos lançamentos'],['trending','Em alta']] as const).map(([key,label]) => <button key={key} type="button" aria-pressed={activeTab === key} className={activeTab === key ? 'active' : ''} onClick={() => { setActiveTab(key); update({ sort: key === 'trending' ? 'price-desc' : 'recent' }) }}>{label}</button>)}</div>
       <div className="catalog-tools desktop-catalog-tools"><form className="search-box" onSubmit={(event) => { event.preventDefault(); update({ q: draft || undefined }) }}><Search size={18}/><input aria-label="Buscar NFTs" placeholder="Buscar por obra, coleção ou artista" value={draft} onChange={(e) => setDraft(e.target.value)}/><button aria-label="Buscar">↵</button></form><label className="filter-select"><SlidersHorizontal size={16}/><span className="sr-only">Ordenar NFTs</span><select value={search.sort ?? 'recent'} onChange={(e) => update({ sort: e.target.value as CatalogQuery['sort'] })}><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label></div>
-      {catalog.isPending ? <div className="nft-grid" aria-label="Carregando catálogo">{Array.from({length: 6}, (_, i) => <div key={i} className="nft-skeleton"><div className="shimmer"/><div className="skeleton-line"/><div className="skeleton-line short"/></div>)}</div> : catalog.isError ? <div className="state-panel" role="alert"><h3>Não foi possível carregar as obras</h3><p>Confira sua conexão e tente novamente.</p><Button className="button button-light" onClick={() => void catalog.refetch()}>Tentar novamente</Button></div> : catalog.data.items.length === 0 ? <div className="state-panel"><h3>Nenhuma obra por aqui</h3><p>Tente outro termo de busca.</p></div> : <div className="nft-grid">{catalog.data.items.map((nft, index) => <Link className={`nft-card nft-card-${index + 1}`} key={nft.id} to="/nft/$nftId" params={{nftId:nft.id}}><div className="nft-image-wrap"><img src={nft.image} alt={`${nft.name}, arte digital de ${nft.creator}`} loading={index < 3 ? 'eager' : 'lazy'}/>{index === 2 && <span className="rare-tag">Raro</span>}<span className="heart-tag" aria-label="Favoritar"><Heart size={16}/></span></div><div className="nft-meta"><div><p className="nft-collection">{nft.collection} <span>· {nft.creator}</span></p><h3>{nft.name}</h3></div><div className="price"><span>Preço</span><strong>{nft.priceEth} ETH</strong></div></div></Link>)}</div>}
+      {catalog.isPending ? <div className="nft-grid" aria-label="Carregando catálogo">{Array.from({length: 6}, (_, i) => <div key={i} className="nft-skeleton"><div className="shimmer"/><div className="skeleton-line"/><div className="skeleton-line short"/></div>)}</div> : catalog.isError ? <div className="state-panel" role="alert"><h3>Não foi possível carregar as obras</h3><p>Confira sua conexão e tente novamente.</p><Button className="button button-light" onClick={() => void catalog.refetch()}>Tentar novamente</Button></div> : catalog.data.items.length === 0 ? <div className="state-panel"><h3>Nenhuma obra por aqui</h3><p>Tente outro termo de busca.</p></div> : <div className="nft-grid">{catalog.data.items.map((nft, index) => <Link className={`nft-card nft-card-${index + 1}`} key={nft.id} to="/nft/$nftId" params={{nftId:nft.id}}><div className="nft-image-wrap"><img src={nft.image} alt={`${nft.name}, arte digital de ${nft.creator}`} loading={index < 3 ? 'eager' : 'lazy'} onError={handleArtworkError}/>{index === 2 && <span className="rare-tag">Raro</span>}<span className="heart-tag" aria-hidden="true"><Heart size={16}/></span></div><div className="nft-meta"><div><p className="nft-collection">{nft.collection} <span>· {nft.creator}</span></p><h3>{nft.name}</h3></div><div className="price"><span>Preço</span><strong>{nft.priceEth} ETH</strong></div></div></Link>)}</div>}
     </section><section id="artists" className="newsletter"><div><p className="eyebrow">Para quem coleciona com intenção</p><h2>Uma galeria que<br/>continua crescendo.</h2></div><p>Obras selecionadas, edições limitadas e artistas que merecem ser descobertos.</p></section>
   </main>
 }
