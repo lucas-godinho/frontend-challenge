@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
+import { Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { Heart, House, LogIn, Search, ShoppingCart, UserRound } from 'lucide-react'
 
 function CartIcon() {
-  return <svg width="18" height="17" viewBox="0 0 18 17" fill="none" aria-hidden="true">
+  return <svg width="16" height="15" viewBox="0 0 18 17" fill="none" aria-hidden="true">
     <path d="M17.5 5.13468L16.5564 11.1111C16.3848 12.2896 15.4412 13.0471 14.2402 13.0471H6.0049C4.88971 13.0471 3.86029 12.2054 3.68873 11.1111L2.65931 4.12458L2.40196 2.18855C2.31618 1.6835 1.88725 1.3468 1.28676 1.3468H0.686274C0.343137 1.3468 0 1.0101 0 0.673401C0 0.3367 0.343137 0 0.686274 0H1.28676C2.48775 0 3.51716 0.841751 3.60294 2.0202L3.77451 3.367H15.9559C16.3848 3.367 16.8137 3.53535 17.0711 3.87205C17.4142 4.20876 17.5 4.71381 17.5 5.13468Z" fill="currentColor"/>
     <path d="M14.4118 16.6667C14.8855 16.6667 15.2696 16.2898 15.2696 15.8249C15.2696 15.36 14.8855 14.9832 14.4118 14.9832C13.938 14.9832 13.5539 15.36 13.5539 15.8249C13.5539 16.2898 13.938 16.6667 14.4118 16.6667Z" fill="currentColor"/>
     <path d="M5.83333 16.6667C6.30711 16.6667 6.69118 16.2898 6.69118 15.8249C6.69118 15.36 6.30711 14.9832 5.83333 14.9832C5.35956 14.9832 4.97549 15.36 4.97549 15.8249C4.97549 16.2898 5.35956 16.6667 5.83333 16.6667Z" fill="currentColor"/>
@@ -22,19 +22,19 @@ function CenterActionIcon() {
 
 export function AppShell() {
   const routerState = useRouterState()
-  const navigate = useNavigate()
   const pathname = routerState.location.pathname
   const navRef = useRef<HTMLElement>(null)
   const [navWidth, setNavWidth] = useState(390)
   const [hoveredTab, setHoveredTab] = useState<number | null>(null)
-  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/wallets') ? 2 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
+  const navHorizontalInset = 20
   const centerNotch = navWidth / 2
-  const hoverCenter = hoveredTab === null ? null : navWidth * (hoveredTab * 0.2 + 0.1)
+  const hoverCenter = hoveredTab === null
+    ? null
+    : navHorizontalInset + (navWidth - navHorizontalInset * 2) * (hoveredTab * 0.2 + 0.1)
   const navNotchRadius = 42
-  const hoverNotchRadius = hoverCenter === null
-    ? navNotchRadius
-    : Math.min(42, Math.max(28, Math.min(hoverCenter - 4, navWidth - hoverCenter - 4)))
-  const navShape = `M 28 31 H ${navWidth - 28} Q ${navWidth} 31 ${navWidth} 59 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 59 Q 0 31 28 31 Z`
+  const hoverNotchRadius = navNotchRadius
+  const navShape = `M 8 31 H ${navWidth - 8} Q ${navWidth} 31 ${navWidth} 39 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 39 Q 0 31 8 31 Z`
 
   useEffect(() => {
     const nav = navRef.current
@@ -47,11 +47,11 @@ export function AppShell() {
   }, [])
 
   const tabs = [
-    { to: '/', label: 'Início', icon: <House size={18} fill="currentColor"/> },
-    { to: '/favorites', label: 'Favoritos', icon: <Heart size={19} fill="currentColor"/> },
-    { to: '/wallets', label: 'Carteira', icon: <CenterActionIcon/>, action: true },
+    { to: '/', label: 'Início', icon: <House size={16} fill="currentColor"/> },
+    { to: '/favorites', label: 'Favoritos', icon: <Heart size={16} fill="currentColor"/> },
+    { id: 'scanner', label: 'Scanner de NFTs', icon: <CenterActionIcon/>, action: true },
     { to: '/cart', label: 'Carrinho', icon: <CartIcon/> },
-    { to: '/profile', label: 'Perfil', icon: <UserRound size={18} fill="currentColor"/> },
+    { to: '/profile', label: 'Perfil', icon: <UserRound size={16} fill="currentColor"/> },
   ] as const
 
   return <>
@@ -86,9 +86,8 @@ export function AppShell() {
       <span className="mobile-nav-action-highlight" aria-hidden="true"/>
       <div className="mobile-nav-items">
         {tabs.map((tab, index) => 'action' in tab ? <button
-          key={tab.to} type="button" className="mobile-nav-item mobile-nav-action is-highlighted" style={{ gridColumn: index + 1 }}
-          aria-label="Abrir carteira" aria-current={activeTab === index ? 'page' : undefined}
-          onClick={() => void navigate({ to: tab.to })} onMouseEnter={() => setHoveredTab(index)} onMouseLeave={() => setHoveredTab(null)} onFocus={() => setHoveredTab(index)} onBlur={() => setHoveredTab(null)}
+          key={tab.id} type="button" className="mobile-nav-item mobile-nav-action is-highlighted" style={{ gridColumn: index + 1 }}
+          aria-label={`${tab.label} (em breve)`} disabled
         >{tab.icon}</button> : <Link
           key={tab.to} to={tab.to} className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${hoveredTab === index ? ' is-highlighted' : ''}`}
           data-tab={tab.to === '/' ? 'home' : tab.to.slice(1)} style={{ gridColumn: index + 1 }} aria-label={tab.label} aria-current={activeTab === index ? 'page' : undefined}
