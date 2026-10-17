@@ -781,6 +781,39 @@ footer {
     margin-left: -4.5%;
     padding: 42px 4.5%;
   }
+  .benefits-newsletter {
+    margin: 0 -4.5%;
+    padding: 28px 24px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(190px, 1.4fr);
+    gap: 14px;
+    background: var(--card);
+  }
+  .benefits-newsletter article { min-width: 0; padding: 0 12px; border-right: 1px solid var(--primary); }
+  .benefits-newsletter article:first-child { padding-left: 0; }
+  .benefits-newsletter article > span { width: 48px; height: 48px; margin-bottom: 12px; display: grid; place-items: center; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); }
+  .benefits-newsletter h3,
+  .benefits-newsletter form > label { margin: 0 0 10px; display: block; color: var(--foreground); font-size: 13px; font-weight: 700; }
+  .benefits-newsletter p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.6; }
+  .benefits-newsletter form { min-width: 0; }
+  .benefits-newsletter form > div { height: 40px; display: flex; background: var(--secondary); }
+  .benefits-newsletter input { min-width: 0; flex: 1; padding: 0 10px; border: 0; background: transparent; color: var(--foreground); font: inherit; font-size: 11px; }
+  .benefits-newsletter form button { padding: 0 10px; border: 0; background: var(--primary); color: var(--primary-foreground); font-weight: 700; }
+  .benefits-newsletter form > p { margin-top: 12px; }
+  .site-footer { width: min(calc(100% - 200px), 960px); max-width: none; margin: 0 auto; padding: 0; display: block; border: 0; color: var(--foreground); font-size: 12px; }
+  .footer-brand-strip,
+  .footer-links { padding: 24px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .footer-brand-strip { min-height: 76px; align-items: center; background: #3b2415; }
+  .footer-brand-strip p { margin: 0; }
+  .footer-brand-strip a { color: var(--foreground); }
+  .footer-links { padding-top: 30px; padding-bottom: 28px; background: var(--card); }
+  .footer-links section { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }
+  .footer-links h2 { margin: 0 0 2px; font-size: 14px; }
+  .footer-links a { color: var(--foreground); }
+  .social-links { display: flex; gap: 7px; margin-bottom: 16px; }
+  .social-links a { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--primary); border-radius: 4px; color: var(--primary); font-weight: 700; }
+  .wallet-list { padding: 6px; background: var(--secondary); color: var(--primary); font-size: 8px !important; white-space: nowrap; }
+  .footer-copyright { margin: 0; padding: 18px; color: var(--primary); text-align: center; }
 }
 
 .hero-dots {
@@ -1496,22 +1529,22 @@ footer {
   .blog-card h3 { min-height: 48px; margin: 0 0 9px; font-size: 16px; line-height: 1.4; }
   .blog-card > div > p:not(.blog-meta) { min-height: 58px; margin: 0 0 14px; color: var(--muted-foreground); font-size: 12px; line-height: 1.6; }
   .blog-card a { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 12px; }
-  .benefits-newsletter { margin: 0 -120px; padding: 32px max(120px, calc((100vw - 1200px) / 2)); display: grid; grid-template-columns: repeat(3, 1fr) 1.3fr; gap: 16px; background: var(--card); }
-  .benefits-newsletter article { padding: 0 18px; border-right: 1px solid var(--primary); }
+  .benefits-newsletter { margin: 0 -120px; padding: 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(280px, 1.4fr); gap: 20px; background: var(--card); }
+  .benefits-newsletter article { min-width: 0; padding: 0 18px; border-right: 1px solid var(--primary); }
   .benefits-newsletter article:first-child { padding-left: 0; }
   .benefits-newsletter article > span { width: 56px; height: 56px; margin-bottom: 12px; display: grid; place-items: center; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); }
   .benefits-newsletter h3,
   .benefits-newsletter form > label { margin: 0 0 10px; display: block; color: var(--foreground); font-size: 15px; font-weight: 700; }
   .benefits-newsletter p { margin: 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.6; }
-  .benefits-newsletter form { padding-left: 0; }
+  .benefits-newsletter form { min-width: 0; padding-left: 0; }
   .benefits-newsletter form > div { height: 42px; display: flex; background: var(--secondary); }
   .benefits-newsletter input { min-width: 0; flex: 1; padding: 0 14px; border: 0; background: transparent; color: var(--foreground); font: inherit; font-size: 13px; }
   .benefits-newsletter form button { padding: 0 14px; border: 0; background: var(--primary); color: var(--primary-foreground); font-weight: 700; }
   .benefits-newsletter form > p { margin-top: 16px; }
 
-  .site-footer { width: 100%; max-width: none; margin: 0; padding: 0; display: block; border: 0; color: var(--foreground); font-size: 13px; }
+  .site-footer { width: min(calc(100% - 200px), 1440px); max-width: none; margin: 0 auto; padding: 0; display: block; border: 0; color: var(--foreground); font-size: 13px; }
   .footer-brand-strip,
-  .footer-links { padding-right: max(120px, calc((100vw - 1200px) / 2)); padding-left: max(120px, calc((100vw - 1200px) / 2)); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+  .footer-links { padding-right: clamp(24px, calc((100% - 1200px) / 2), 120px); padding-left: clamp(24px, calc((100% - 1200px) / 2), 120px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
   .footer-brand-strip { min-height: 88px; align-items: center; background: #3b2415; }
   .footer-brand-strip p { margin: 0; }
   .footer-brand-strip a { color: var(--foreground); }
@@ -1522,7 +1555,8 @@ footer {
   .social-links { display: flex; gap: 8px; margin-bottom: 18px; }
   .social-links a { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--primary); border-radius: 4px; color: var(--primary); font-weight: 700; }
   .wallet-list { padding: 6px; background: var(--secondary); color: var(--primary); font-size: 9px !important; white-space: nowrap; }
-  .footer-copyright { margin: 0; padding: 20px; color: var(--muted-foreground); text-align: center; }
+  .footer-links { background: var(--card); }
+  .footer-copyright { margin: 0; padding: 20px; color: var(--primary); text-align: center; }
 }
 
 @media (min-width: 1200px) and (max-width: 1359px) {
@@ -1542,9 +1576,9 @@ footer {
   .catalog-body { grid-template-columns: 250px minmax(0, 1fr); gap: 28px; }
   .nft-grid { gap: 24px 16px; }
   .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .benefits-newsletter { margin: 0 -5.56%; padding: 28px 5.56%; grid-template-columns: repeat(2, 1fr); }
+  .benefits-newsletter { margin: 0 -5.56%; padding: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-brand-strip,
-  .footer-links { padding-right: 5%; padding-left: 5%; }
+  .footer-links { padding-right: 24px; padding-left: 24px; }
 }
 
 :focus-visible {
@@ -1579,7 +1613,7 @@ footer {
 .price-range input:focus-visible { outline: 0; }
 .price-range input:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--foreground); outline-offset: 2px; }
 .price-range input:focus-visible::-moz-range-thumb { outline: 2px solid var(--foreground); outline-offset: 2px; }
-.featured-nft { margin-top: 16px; padding: 22px 0 0; border-top: 1px solid var(--border); }
+.featured-nft { margin-top: 16px; padding: 22px 0 0; border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(210, 138, 76, 0.1) 0%, rgba(210, 138, 76, 0.03) 100%); }
 .featured-nft h3 { margin: 0 16px 10px; color: var(--accent); font-size: 17px; text-transform: uppercase; }
 .featured-nft-offer { margin: 0 0 10px; text-align: center; text-transform: uppercase; font-size: 14px; }
 .featured-nft > img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 18px; display: block; }
