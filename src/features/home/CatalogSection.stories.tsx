@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CatalogQuery } from '@/types/marketplace'
 import { catalogFixture } from '@/mocks/fixtures'
-import { NftCardContent } from '@/features/catalog/NftCard'
+import { FavoriteButton, NftCardContent } from '@/features/catalog/NftCard'
 import { CatalogSection } from './CatalogSection'
 import type { CatalogViewState } from './CatalogResults'
 import { queryCatalog } from '@/mocks/catalog'
@@ -27,7 +27,7 @@ function CatalogSectionExample({ status = 'success' }: { status?: CatalogViewSta
     catalogData={data}
     featuredNft={catalogFixture[0]}
     state={state}
-    renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/></article>}
+    renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/><FavoriteButton nft={nft}/></article>}
   /></main>
 }
 

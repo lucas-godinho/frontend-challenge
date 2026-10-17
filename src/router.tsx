@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Link } from '@tanstack/react-router'
 import { AppShell } from '@/components/layout/AppShell'
 import { HomePage } from '@/features/home/HomePage'
+import { FavoritesPage } from '@/features/favorites/FavoritesPage'
 import type { CatalogQuery } from '@/types/marketplace'
 
 function SearchNotFound() {
@@ -35,9 +36,10 @@ const indexRoute = createRoute({
   component: HomePage,
 })
 const detailRoute = createRoute({ getParentRoute: () => rootRoute, path: '/nft/$nftId', component: PlaceholderPage })
-const placeholderRoutes = ['/cart', '/checkout', '/favorites', '/login', '/register', '/profile', '/wallets', '/orders/$orderId']
+const favoritesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/favorites', component: FavoritesPage })
+const placeholderRoutes = ['/cart', '/checkout', '/login', '/register', '/profile', '/wallets', '/orders/$orderId']
   .map((path) => createRoute({ getParentRoute: () => rootRoute, path, component: PlaceholderPage }))
-const routeTree = rootRoute.addChildren([indexRoute, detailRoute, ...placeholderRoutes])
+const routeTree = rootRoute.addChildren([indexRoute, detailRoute, favoritesRoute, ...placeholderRoutes])
 
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 0, scrollRestoration: true })
 

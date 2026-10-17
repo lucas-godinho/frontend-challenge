@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Heart } from 'lucide-react'
 import type { SyntheticEvent } from 'react'
 import type { Nft } from '@/types/marketplace'
+import { useFavorites } from '@/features/favorites/use-favorites'
 
 function handleArtworkError(event: SyntheticEvent<HTMLImageElement>) {
   const image = event.currentTarget
@@ -11,13 +12,26 @@ function handleArtworkError(event: SyntheticEvent<HTMLImageElement>) {
 }
 
 export function NftCard({ nft, index = 0 }: { nft: Nft; index?: number }) {
-  return <Link
-    className={`nft-card nft-card-${index + 1}`}
-    to="/nft/$nftId"
-    params={{ nftId: nft.id }}
-  >
-    <NftCardContent nft={nft} index={index}/>
-  </Link>
+  return <article className={`nft-card nft-card-${index + 1}`}>
+    <Link className="nft-card-link" to="/nft/$nftId" params={{ nftId: nft.id }}>
+      <NftCardContent nft={nft} index={index}/>
+    </Link>
+    <FavoriteButton nft={nft}/>
+  </article>
+}
+
+export function FavoriteButton({ nft }: { nft: Nft }) {
+  const { isFavorite, toggleFavorite } = useFavorites()
+  const favorite = isFavorite(nft.id)
+
+  return <button
+    type="button"
+    className="heart-tag"
+    aria-label={favorite ? `Remover ${nft.name} dos favoritos` : `Adicionar ${nft.name} aos favoritos`}
+    aria-pressed={favorite}
+    title={favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+    onClick={() => toggleFavorite(nft.id)}
+  ><Heart size={16} fill={favorite ? 'currentColor' : 'none'}/></button>
 }
 
 export function NftCardContent({ nft, index = 0 }: { nft: Nft; index?: number }) {
@@ -30,7 +44,6 @@ export function NftCardContent({ nft, index = 0 }: { nft: Nft; index?: number })
         onError={handleArtworkError}
       />
       {index === 2 && <span className="rare-tag">Raro</span>}
-      <span className="heart-tag" aria-hidden="true"><Heart size={16}/></span>
     </div>
     <div className="nft-meta">
       <div>

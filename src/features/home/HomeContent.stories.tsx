@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CatalogQuery } from '@/types/marketplace'
 import { catalogFixture } from '@/mocks/fixtures'
-import { NftCardContent } from '@/features/catalog/NftCard'
+import { FavoriteButton, NftCardContent } from '@/features/catalog/NftCard'
 import { HomeContent } from './HomeContent'
 import type { CatalogViewState } from './CatalogResults'
 import { queryCatalog } from '@/mocks/catalog'
@@ -25,7 +25,7 @@ function HomeContentExample() {
     onUpdate={(next) => setSearch((current) => ({ ...current, ...next, page: next.page ?? 1 }))}
     onSelectSlide={setActiveSlide}
     onPauseChange={() => undefined}
-    renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/></article>}
+    renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/><FavoriteButton nft={nft}/></article>}
   />
 }
 
