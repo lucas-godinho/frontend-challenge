@@ -58,3 +58,4 @@ A configuração `vercel.json` faz fallback das rotas SPA para `index.html`. Dep
 
 - [Escopo original do desafio](CHALLENGE.md)
 - [Decisões, contratos REST, cache e limites atuais](ARCHITECTURE.md)
+- [Home responsiva, componentes e breakpoints](docs/HOME.md)

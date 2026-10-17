@@ -40,7 +40,9 @@ O escopo inicial inclui o cliente Socket.IO, mas ainda não implementa o transpo
 
 ## Fidelidade visual e acessibilidade
 
-O Figma está em modo de visualização. A home mobile Kurio segue o frame de 414 × 896 px, padding superior/lateral de 40/24 px e gap de 16 px. O CSS exportado confirmou Ink `#140D0A`, Surface Card `#241612`, Surface Raised `#2F1D15`, Border `#3F2319`, Secondary `#B39463`, Text Secondary `#CFB28C`, Foreground `#F5F1EB`, Primary `#D28A4C` e Accent `#E89B55`. Roboto Mono é servida localmente via Fontsource. As referências de imagens no CSS vieram sem os arquivos vinculados, então a home ainda usa imagens temporárias das fixtures.
+O Figma está em modo de visualização. A Home mobile Kurio segue o frame de 414 × 896 px, padding superior/lateral de 40/24 px e gap de 16 px. O CSS exportado confirmou Ink `#140D0A`, Surface Card `#241612`, Surface Raised `#2F1D15`, Border `#3F2319`, Secondary `#B39463`, Text Secondary `#CFB28C`, Foreground `#F5F1EB`, Primary `#D28A4C` e Accent `#E89B55`. Roboto Mono é servida localmente via Fontsource. As referências de imagens no CSS vieram sem os arquivos vinculados, então a Home ainda usa imagens temporárias das fixtures.
+
+A Home desktop compartilha dados, estado e componentes com a composição mobile. O shell, carrossel, catálogo, newsletter e card estão separados em componentes por responsabilidade; veja [Home responsiva](docs/HOME.md) para o mapa e os breakpoints. O frame desktop atualmente aberto no protótipo exibe galeria e detalhes de um NFT sob o rótulo “Início / Mercado”; não corresponde visualmente à grade da Home de descoberta. A vitrine desktop adapta o conteúdo mobile até que o frame correto de Home desktop seja confirmado.
 
 A home mantém uma composição temporária e imagens de demonstração, sem os assets originais do Figma. Estados incluem loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida.
 
