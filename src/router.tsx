@@ -133,16 +133,65 @@ function AppShell() {
   </>
 }
 
+const heroSlides = [
+  {
+    eyebrow: 'Bem-vindo à Kurio',
+    title: <>Seja dono da<br/><em>cultura digital</em></>,
+    description: 'Descubra NFTs selecionados de criadores do mundo todo.',
+    action: 'Explorar',
+  },
+  {
+    eyebrow: 'Curadoria da semana',
+    title: <>Encontre sua<br/><em>próxima obra</em></>,
+    description: 'Edições especiais de artistas independentes para sua coleção.',
+    action: 'Ver coleção',
+  },
+  {
+    eyebrow: 'Arte que conecta',
+    title: <>Colecione o<br/><em>extraordinário</em></>,
+    description: 'Explore obras digitais únicas e descubra novos criadores.',
+    action: 'Descobrir',
+  },
+]
+
 function HomePage() {
   const search = useSearch({ from: '/' }) as CatalogQuery
   const navigate = useNavigate({ from: '/' })
   const [draft, setDraft] = useState(search.q ?? '')
   const [activeTab, setActiveTab] = useState<'all' | 'new' | 'trending'>('all')
+  const [activeSlide, setActiveSlide] = useState(0)
   const catalog = useCatalog(search)
+  const currentSlide = heroSlides[activeSlide]!
+  const slideItems = catalog.data?.items ?? []
+  const firstArtwork = slideItems.length > 0 ? slideItems[(activeSlide * 2) % slideItems.length] : undefined
+  const secondArtwork = slideItems.length > 1 ? slideItems[(activeSlide * 2 + 1) % slideItems.length] : firstArtwork
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => setActiveSlide((slide) => (slide + 1) % heroSlides.length), 5000)
+    return () => window.clearInterval(timer)
+  }, [])
+
   const update = (next: Partial<CatalogQuery>) => void navigate({ search: (current: CatalogQuery) => ({ ...current, ...next, page: 1 }), replace: false })
   return <main id="main" className="page-wrap">
     <div className="mobile-search-row"><form className="search-box" onSubmit={(event) => { event.preventDefault(); update({ q: draft || undefined }) }}><Search size={18}/><input aria-label="Buscar NFTs" placeholder="Explorar coleções" value={draft} onChange={(e) => setDraft(e.target.value)}/></form><label className="mobile-filter"><SlidersHorizontal size={19}/><span className="sr-only">Ordenar NFTs</span><select aria-label="Ordenar NFTs" value={search.sort ?? 'recent'} onChange={(e) => update({ sort: e.target.value as CatalogQuery['sort'] })}><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label></div>
-    <section className="hero"><div className="hero-copy"><p className="eyebrow">Bem-vindo à Kurio</p><h1>Seja dono da<br/><em>cultura digital</em></h1><p className="hero-description">Descubra NFTs selecionados de criadores do mundo todo.</p><a className="button button-light" href="#catalog">Explorar <ArrowUpRight size={16}/></a></div><div className="hero-art" role="img" aria-label="Arte digital selecionada da coleção Kurio"><img className="hero-art-main" src={catalog.data?.items[0]?.image} alt=""/><img className="hero-art-secondary" src={catalog.data?.items[1]?.image} alt=""/><div className="art-circle"/><span className="art-index">01 — 03</span></div><div className="hero-dots" aria-label="Slide 1 de 3"><span/><span/><span/></div></section>
+    <section className="hero" aria-roledescription="carousel" aria-label="Destaques da Kurio">
+      <img className="hero-background" src="/images/hero-background.svg" alt="" aria-hidden="true"/>
+      <div className="hero-copy" key={`copy-${activeSlide}`}>
+        <p className="eyebrow">{currentSlide.eyebrow}</p>
+        <h1>{currentSlide.title}</h1>
+        <p className="hero-description">{currentSlide.description}</p>
+        <a className="button button-light" href="#catalog">{currentSlide.action} <ArrowUpRight size={16}/></a>
+      </div>
+      <div className="hero-art" role="group" aria-label={`Obras em destaque, slide ${activeSlide + 1} de ${heroSlides.length}`}>
+        {firstArtwork && <img key={`${activeSlide}-main`} className="hero-art-main" src={firstArtwork.image} alt={firstArtwork.name}/>}
+        {secondArtwork && <img key={`${activeSlide}-secondary`} className="hero-art-secondary" src={secondArtwork.image} alt={secondArtwork.name}/>}
+        <div className="art-circle"/><span className="art-index">{String(activeSlide + 1).padStart(2, '0')} — 03</span>
+      </div>
+      <div className="hero-dots" aria-label="Escolher destaque">
+        {heroSlides.map((slide, index) => <button key={slide.eyebrow} type="button" aria-label={`Mostrar slide ${index + 1}: ${slide.eyebrow}`} aria-current={activeSlide === index ? 'true' : undefined} onClick={() => setActiveSlide(index)}><span/></button>)}
+      </div>
+    </section>
     <section className="catalog-section" id="catalog"><div className="section-heading"><div><p className="eyebrow">Curadoria da semana</p><h2>Descubra NFTs</h2></div><button className="text-button" onClick={() => update({ category: undefined, sort: 'recent', q: undefined })}>Ver tudo <ArrowUpRight size={15}/></button></div>
       <div className="catalog-tabs" role="tablist" aria-label="Categorias de NFTs">{([['all','Todos os NFTs'],['new','Novos lançamentos'],['trending','Em alta']] as const).map(([key,label]) => <button key={key} role="tab" aria-selected={activeTab === key} className={activeTab === key ? 'active' : ''} onClick={() => { setActiveTab(key); update({ sort: key === 'trending' ? 'price-desc' : 'recent' }) }}>{label}</button>)}</div>
       <div className="catalog-tools desktop-catalog-tools"><form className="search-box" onSubmit={(event) => { event.preventDefault(); update({ q: draft || undefined }) }}><Search size={18}/><input aria-label="Buscar NFTs" placeholder="Buscar por obra, coleção ou artista" value={draft} onChange={(e) => setDraft(e.target.value)}/><button aria-label="Buscar">↵</button></form><label className="filter-select"><SlidersHorizontal size={16}/><span className="sr-only">Ordenar NFTs</span><select value={search.sort ?? 'recent'} onChange={(e) => update({ sort: e.target.value as CatalogQuery['sort'] })}><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label></div>

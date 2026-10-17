@@ -1,0 +1,24 @@
+<svg width="366" height="190" viewBox="0 0 366 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="base" x1="5" y1="0" x2="366" y2="183" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D28A4C" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#D28A4C" stop-opacity=".1"/>
+    </linearGradient>
+    <linearGradient id="glow-left" x1="69" y1="-10" x2="139" y2="185" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DD9A5F" stop-opacity=".43"/>
+      <stop offset="1" stop-color="#D28A4C" stop-opacity=".04"/>
+    </linearGradient>
+    <linearGradient id="glow-right" x1="222" y1="11" x2="292" y2="206" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DD9A5F" stop-opacity=".37"/>
+      <stop offset="1" stop-color="#D28A4C" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="panel">
+      <rect width="366" height="190" rx="30"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#panel)">
+    <rect width="366" height="190" fill="url(#base)"/>
+    <circle cx="44" cy="93" r="124" fill="url(#glow-left)"/>
+    <circle cx="197" cy="114" r="124" fill="url(#glow-right)"/>
+  </g>
+</svg>
