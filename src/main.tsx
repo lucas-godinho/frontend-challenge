@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
-import { worker } from './mocks/browser'
 import './styles.css'
 
 const queryClient = new QueryClient({
@@ -14,7 +13,11 @@ const queryClient = new QueryClient({
 })
 
 async function start() {
-  if (import.meta.env.VITE_MOCKS !== 'false') {
+  const mocksEnabled = import.meta.env.VITE_MOCKS === 'true'
+    || (import.meta.env.DEV && import.meta.env.VITE_MOCKS !== 'false')
+
+  if (mocksEnabled) {
+    const { worker } = await import('./mocks/browser')
     await worker.start({ onUnhandledRequest: 'bypass' })
   }
 

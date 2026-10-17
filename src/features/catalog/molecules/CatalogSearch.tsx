@@ -1,6 +1,7 @@
 import { Search, SlidersHorizontal } from 'lucide-react'
 import type { CatalogQuery } from '@/types/marketplace'
 import { Select } from '@/components/molecules/select'
+import { Input } from '@/components/atoms/input'
 
 export function CatalogSearchForm({ draft, onDraftChange, onSubmit, placeholder }: {
   draft: string
@@ -10,7 +11,9 @@ export function CatalogSearchForm({ draft, onDraftChange, onSubmit, placeholder 
 }) {
   return <form className="search-box" onSubmit={(event) => { event.preventDefault(); onSubmit() }}>
     <Search size={18}/>
-    <input aria-label="Buscar NFTs" placeholder={placeholder} value={draft} onChange={(event) => onDraftChange(event.target.value)}/>
+    <Input aria-label="Buscar NFTs" placeholder={placeholder} value={draft}
+      className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm shadow-none outline-none ring-0 placeholder:text-muted-foreground focus-visible:ring-0"
+      onChange={(event) => onDraftChange(event.target.value)}/>
     {placeholder.startsWith('Buscar') && <button type="submit" aria-label="Buscar">↵</button>}
   </form>
 }

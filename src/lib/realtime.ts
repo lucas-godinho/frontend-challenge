@@ -28,9 +28,19 @@ export interface ClientToServerEvents {
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined
 
+export function isRealtimeConfigured(): boolean {
+  const mocksEnabled = import.meta.env.VITE_MOCKS === 'true'
+    || (import.meta.env.DEV && import.meta.env.VITE_MOCKS !== 'false')
+  return !mocksEnabled && Boolean(import.meta.env.VITE_SOCKET_URL)
+}
+
 export function getRealtimeClient(): Socket<ServerToClientEvents, ClientToServerEvents> {
-  socket ??= io(import.meta.env.VITE_SOCKET_URL || window.location.origin, {
+  const baseUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin
+
+  socket ??= io(baseUrl, {
     autoConnect: false,
+    path: '/socket.io/',
+    transports: ['websocket'],
     reconnection: true,
     reconnectionAttempts: 8,
     timeout: 5_000,

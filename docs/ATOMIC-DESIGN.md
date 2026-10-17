@@ -15,7 +15,7 @@ flowchart BT
 
 ### Atoms
 
-Controles visuais básicos sem regra de negócio ou dependência de tela. Exemplos: `Button`, `Input` e o tema visual. São montados com props e tokens, nunca importam componentes de feature.
+Controles visuais básicos sem regra de negócio ou dependência de tela. `Button`, `Input` e `Card` seguem a organização de source components shadcn/ui, com Radix Slot, `class-variance-authority`, `cn` e tokens Tailwind. São montados com props e tokens, nunca importam componentes de feature. O manifesto `components.json` mantém os aliases alinhados à organização do projeto.
 
 ### Molecules
 

@@ -4,6 +4,7 @@ import type { CatalogViewState } from '@/features/home/organisms/CatalogResults'
 import { HomeTemplate } from '@/features/home/templates/HomeTemplate'
 import { homeHeroSlides } from '../home-content'
 import { useCatalog } from '@/features/catalog/use-catalog'
+import { useCatalogRealtime } from '@/features/catalog/use-catalog-realtime'
 import type { CatalogQuery } from '@/types/marketplace'
 
 export function HomePage() {
@@ -14,6 +15,7 @@ export function HomePage() {
   const [isCarouselPaused, setIsCarouselPaused] = useState(false)
   const catalog = useCatalog(search)
   const featuredCatalog = useCatalog({ sort: 'recent', page: 1 })
+  useCatalogRealtime(catalog.data?.items.map((nft) => nft.id) ?? [])
   const catalogState: CatalogViewState = catalog.isPending
     ? { status: 'loading' }
     : catalog.isError
