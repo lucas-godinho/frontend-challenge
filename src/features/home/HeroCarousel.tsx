@@ -5,7 +5,9 @@ import type { Nft } from '@/types/marketplace'
 export type HeroSlide = {
   eyebrow: string
   title: ReactNode
+  desktopTitle?: ReactNode
   description: string
+  desktopDescription?: string
   action: string
 }
 
@@ -47,8 +49,8 @@ export function HeroCarousel({
     <img className="hero-background" src="/images/hero-background.svg" alt="" aria-hidden="true"/>
     <div className="hero-copy" key={`copy-${activeSlide}`}>
       <p className="eyebrow">{currentSlide.eyebrow}</p>
-      <h1>{currentSlide.title}</h1>
-      <p className="hero-description">{currentSlide.description}</p>
+      <h1><span className="hero-title-mobile">{currentSlide.title}</span><span className="hero-title-desktop">{currentSlide.desktopTitle ?? currentSlide.title}</span></h1>
+      <p className="hero-description"><span className="hero-description-mobile">{currentSlide.description}</span><span className="hero-description-desktop">{currentSlide.desktopDescription ?? currentSlide.description}</span></p>
       <a className="button button-light" href="#catalog">{currentSlide.action} <ArrowUpRight size={16}/></a>
     </div>
     <div className="hero-art" role="group" aria-label={`Obras em destaque, slide ${activeSlide + 1} de ${slides.length}`}>

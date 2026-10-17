@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { CatalogSection, MobileSearchRow } from './CatalogSection'
 import { HeroCarousel, type HeroSlide } from './HeroCarousel'
 import { Newsletter } from './Newsletter'
+import { HomeEditorial } from './HomeEditorial'
 import { useCatalog } from '@/features/catalog/use-catalog'
 import type { CatalogQuery } from '@/types/marketplace'
 
@@ -10,7 +11,9 @@ const heroSlides: HeroSlide[] = [
   {
     eyebrow: 'Bem-vindo à Kurio',
     title: <>Seja dono da<br/><em>cultura digital</em></>,
+    desktopTitle: <>Seja dono do futuro<br/>da arte digital</>,
     description: 'Descubra NFTs selecionados de criadores do mundo todo.',
+    desktopDescription: 'Descubra NFTs selecionados de criadores emergentes e consagrados. Colecione arte digital rara, apoie artistas e tenha uma parte da cultura da internet.',
     action: 'Explorar',
   },
   {
@@ -60,5 +63,6 @@ export function HomePage() {
     />
     <CatalogSection search={search} draft={draft} onDraftChange={setDraft} onUpdate={update} catalog={catalog}/>
     <Newsletter/>
+    <HomeEditorial items={featuredCatalog.data?.items ?? []}/>
   </main>
 }

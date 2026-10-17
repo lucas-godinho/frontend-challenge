@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
-import { Heart, House, ShoppingBag, UserRound } from 'lucide-react'
+import { Heart, House, LogIn, Search, ShoppingCart, UserRound } from 'lucide-react'
 
 function CartIcon() {
   return <svg width="18" height="17" viewBox="0 0 18 17" fill="none" aria-hidden="true">
@@ -59,12 +59,13 @@ export function AppShell() {
     <header className="topbar">
       <Link to="/" className="wordmark">Kurio<span>®</span></Link>
       <nav aria-label="Principal" className="main-nav">
-        <Link to="/">Descobrir</Link><a href="#curated">Coleções</a><a href="#artists">Artistas</a>
+        <Link to="/" className={pathname === '/' ? 'active' : ''}>Início</Link><a href="#catalog">Mercado</a><a href="#artists">Criadores</a><a href="#blog">Aprenda</a>
       </nav>
       <div className="top-actions">
-        <Link to="/login" aria-label="Minha conta"><UserRound size={19}/></Link>
-        <Link to="/cart" aria-label="Carrinho"><ShoppingBag size={19}/></Link>
-        <button className="avatar-button" aria-label="Menu do perfil">K</button>
+        <a href="#catalog" aria-label="Buscar"><Search size={21}/></a>
+        <Link className="desktop-cart-link" to="/cart" aria-label="Carrinho"><ShoppingCart size={21}/><span>6</span></Link>
+        <Link className="desktop-login-link" to="/login"><LogIn size={18}/> Entrar</Link>
+        <Link className="mobile-account-link" to="/login" aria-label="Minha conta"><UserRound size={19}/></Link>
       </div>
     </header>
     <div className="route-transition" key={pathname}><Outlet/></div>
@@ -92,6 +93,15 @@ export function AppShell() {
         >{tab.icon}</Link>)}
       </div>
     </nav>
-    <footer><span className="wordmark">Kurio<span>®</span></span><p>Arte digital, feita para ficar.</p><span>© 2026 Kurio Marketplace</span></footer>
+    <footer className="site-footer">
+      <div className="footer-brand-strip"><strong className="wordmark">Kurio<span>®</span></strong><p>Feito para colecionadores,<br/>criadores e cultura</p><a href="mailto:contato@email.com">contato@email.com</a><a href="tel:+551140028922">+55 11 4002 8922</a></div>
+      <div className="footer-links">
+        <section><h2>Meu perfil</h2><a href="#profile">Meu perfil</a><a href="#collection">Minha coleção</a><a href="#activity">Atividade</a><a href="#creator">Estúdio do criador</a><a href="#wishlist">Lista de interesse</a></section>
+        <section><h2>Central de ajuda</h2><a href="#help">Central de ajuda</a><a href="#buying">Como comprar NFTs</a><a href="#wallet">Carteira e segurança</a><a href="#policy">Política do mercado</a><a href="#report">Denunciar item</a></section>
+        <section><h2>Coleções</h2><a href="#digital-art">Arte digital</a><a href="#photo">Fotografia</a><a href="#music">Música</a><a href="#3d">Arte 3D</a><a href="#utility">Utilidade</a></section>
+        <section><h2>Redes sociais</h2><div className="social-links"><a href="#facebook" aria-label="Facebook">f</a><a href="#instagram" aria-label="Instagram">◎</a><a href="#twitter" aria-label="Twitter">t</a><a href="#linkedin" aria-label="LinkedIn">in</a></div><h2>Carteiras compatíveis</h2><p className="wallet-list">METAMASK · WALLETCONNECT · COINBASE</p></section>
+      </div>
+      <p className="footer-copyright">© 2026 Kurio. Propriedade digital para todos.</p>
+    </footer>
   </>
 }
