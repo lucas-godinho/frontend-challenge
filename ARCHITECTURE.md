@@ -3,6 +3,7 @@
 ## Organização
 
 - `src/features`: módulos de domínio (catálogo, conta, carrinho, checkout e pedidos).
+- `src/components/atoms`, `molecules`, `organisms`: peças visuais globais organizadas por Atomic Design; detalhes e a hierarquia das features estão em [docs/ATOMIC-DESIGN.md](docs/ATOMIC-DESIGN.md).
 - `src/lib`: clientes de infraestrutura compartilhados, incluindo Axios.
 - `src/mocks`: fixtures e handlers MSW na fronteira de rede.
 - `src/types`: contratos de transporte e domínio.
@@ -30,7 +31,7 @@ Erros usam `{ code, message, fields? }`, com HTTP 400 (validação), 401 (sessã
 
 ## Sessão e cache
 
-A sessão simulada será persistida em storage sem credenciais em claro. Cache privado deve incluir o identificador da sessão na query key; logout/troca de usuário limpa queries privadas e fecha subscriptions antes de definir a nova sessão. Mutations de compra não repetem automaticamente. Catálogo usa `staleTime` de 30 s, GC em 5 min e retry único para leitura. Favoritos usarão atualização otimista com rollback e invalidação final.
+A sessão simulada será persistida em storage sem credenciais em claro. Cache privado deve incluir o identificador da sessão na query key; logout/troca de usuário limpa queries privadas e fecha subscriptions antes de definir a nova sessão. Mutations de compra não repetem automaticamente. Catálogo usa `staleTime` de 30 s, GC em 5 min e retry único para leitura. Favoritos da demonstração atualmente mantêm IDs em `localStorage`; quando houver autenticação, migrar para o endpoint privado `/me/favorites` com atualização otimista e rollback.
 
 ## Tempo real
 
@@ -42,7 +43,7 @@ O escopo inicial inclui o cliente Socket.IO, mas ainda não implementa o transpo
 
 O Figma está em modo de visualização. A Home mobile Kurio segue o frame de 414 × 896 px, padding superior/lateral de 40/24 px e gap de 16 px. O CSS exportado confirmou Ink `#140D0A`, Surface Card `#241612`, Surface Raised `#2F1D15`, Border `#3F2319`, Secondary `#B39463`, Text Secondary `#CFB28C`, Foreground `#F5F1EB`, Primary `#D28A4C` e Accent `#E89B55`. Roboto Mono é servida localmente via Fontsource. As referências de imagens no CSS vieram sem os arquivos vinculados, então a Home ainda usa imagens temporárias das fixtures.
 
-A Home desktop compartilha dados, estado e componentes com a composição mobile. O shell, carrossel, catálogo, newsletter e card estão separados em componentes por responsabilidade; veja [Home responsiva](docs/HOME.md) para o mapa e os breakpoints. O frame desktop atualmente aberto no protótipo exibe galeria e detalhes de um NFT sob o rótulo “Início / Mercado”; não corresponde visualmente à grade da Home de descoberta. A vitrine desktop adapta o conteúdo mobile até que o frame correto de Home desktop seja confirmado.
+A Home desktop compartilha dados, estado e componentes com a composição mobile. Pages conectam infraestrutura, templates recebem props e organizam organisms, moléculas implementam tarefas pequenas e átomos mantêm os controles visuais base. Veja [Atomic Design](docs/ATOMIC-DESIGN.md) para contratos/reuso e [Home responsiva](docs/HOME.md) para breakpoints e stories. O Storybook espelha essa hierarquia para revisão visual isolada.
 
 A home mantém uma composição temporária e imagens de demonstração, sem os assets originais do Figma. Estados incluem loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida.
 

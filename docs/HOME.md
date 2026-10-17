@@ -1,75 +1,61 @@
 # Home responsiva
 
-## Arquitetura e responsabilidades
+## Composição e responsabilidades
 
-| Área | Arquivo | Responsabilidade |
+| Nível | Caminho | Responsabilidade |
 | --- | --- | --- |
-| Shell | `src/components/layout/AppShell.tsx` | Cabeçalho, Outlet, navegação mobile e rodapé |
-| Select custom | `src/components/ui/select.tsx` | Ordenação com listbox tematizado, teclado e fechamento acessível |
-| Paginação | `src/components/ui/pagination.tsx` | Janela de páginas responsiva ligada aos dados da API e à URL |
-| Página/estado | `src/features/home/HomePage.tsx` | Integra Router e Query, mantém os parâmetros da URL e converte o resultado remoto para estado de apresentação |
-| Composição | `src/features/home/HomeContent.tsx` | Compõe a Home sem acoplar a apresentação ao Router ou à query |
-| Conteúdo inicial | `src/features/home/home-content.tsx` | Dados dos slides, promoções e artigos usados pela Home e pelas stories |
-| Destaques | `src/features/home/HeroCarousel.tsx` | Slides, artwork, controles e pausa da rotação automática |
-| Busca | `src/features/home/CatalogSearch.tsx` | Campo de busca, ordenação e linha compacta de busca mobile |
-| Abas | `src/features/home/CatalogTabs.tsx` | Navegação entre categorias do catálogo |
-| Filtros | `src/features/home/CatalogFilters.tsx` | Filtros de catálogo usados nos breakpoints suportados |
-| Faixa de preço | `src/features/home/PriceRangeFilter.tsx` | Sliders mínimo/máximo em uma trilha, sem cruzamento e sincronizados à URL |
-| NFT em destaque | `src/features/home/FeaturedNft.tsx` | Oferta editorial exibida sob os filtros desktop |
-| Resultados | `src/features/home/CatalogResults.tsx` | Grade e estados explícitos de carregamento, erro, vazio e sucesso |
-| Seção de catálogo | `src/features/home/CatalogSection.tsx` | Compõe busca, abas, filtros e resultados |
-| Promoções | `src/features/home/PromoHighlights.tsx` | Cards promocionais reutilizáveis, alimentados por itens ou dados próprios |
-| Diário | `src/features/home/BlogSection.tsx` | Lista de artigos editoriais da Home |
-| Benefícios | `src/features/home/BenefitsNewsletter.tsx` | Benefícios e formulário de newsletter do rodapé desktop |
-| Conteúdo editorial | `src/features/home/HomeEditorial.tsx` | Compõe promoções, diário e benefícios/newsletter |
-| Chamada mobile | `src/features/home/Newsletter.tsx` | Bloco compacto de descoberta de artistas para mobile |
-| Card reutilizável | `src/features/catalog/NftCard.tsx` | Apresentação de um NFT e navegação ao detalhe |
+| Page | `src/features/home/pages/HomePage.tsx` | Conecta TanStack Router, Query, URL, rotação do hero e handlers da Home. |
+| Template | `src/features/home/templates/HomeTemplate.tsx` | Compõe a página visual com dados/estados/callbacks recebidos por props; não consulta API nem lê Router. |
+| Organism | `src/features/home/organisms/CatalogSection.tsx` | Compõe filtros, controles e resultados da vitrine. |
+| Organism | `src/features/home/organisms/CatalogFilters.tsx` | Categorias, redes, faixa de preço e destaque editorial. |
+| Organism | `src/features/home/organisms/CatalogResults.tsx` | Grade e estados explícitos de carregamento, erro, vazio e sucesso. |
+| Organism | `src/features/home/organisms/HeroCarousel.tsx` | Slides, artwork, controles e pausa da rotação automática. |
+| Organisms | `src/features/home/organisms/{HomeEditorial,PromoHighlights,BlogSection,BenefitsNewsletter,Newsletter}.tsx` | Blocos editoriais e chamadas responsivas da Home. |
+| Molecules | `src/features/catalog/molecules/` | Busca/ordenação, abas, faixa de preço e card NFT reutilizados entre catálogo e Favoritos. |
+| Molecules | `src/components/molecules/` | Select, paginação e superfície de card compartilhados entre features. |
+| Atoms | `src/components/atoms/` | Button e Input base, sem dependência de um domínio. |
+| Organism global | `src/components/organisms/AppShell.tsx` | Cabeçalho, outlet, navegação mobile e rodapé compartilhados pelas páginas. |
 
-O TanStack Router mantém busca, ordenação, categoria e página na URL. `useCatalog` isola cache e chamadas remotas com TanStack Query. `HomePage` traduz o resultado da query para `CatalogViewState`, uma união discriminada; os componentes visuais recebem props e podem ser renderizados isoladamente no Storybook.
+`src/features/home/home-content.tsx` e `home-types.ts` guardam os dados de demonstração e os contratos dos blocos editoriais. Catálogo e Favoritos preservam seus próprios módulos de domínio; somente componentes realmente usados por mais de uma tela sobem para `src/components`.
+
+## Fluxo de estado
+
+`HomePage` valida e atualiza os filtros pela URL e usa `useCatalog` para o estado remoto. `HomeTemplate` recebe os dados já resolvidos. Os organismos e moléculas permanecem controlados por props, facilitando composição, teste visual e reuso em páginas futuras.
+
+Os favoritos usam `src/features/favorites/use-favorites.ts`, um pequeno store baseado em `useSyncExternalStore` sincronizado com `localStorage`. `FavoritesPage` resolve os IDs salvos com catálogo REST e entrega estado/itens a `FavoritesTemplate`; a mesma molécula `NftCard` é usada na Home e na lista de salvos.
 
 ## Storybook
 
-As stories ficam junto dos componentes (`*.stories.tsx`) e usam autodocs. Isso mantém documentação, exemplos e variações perto da implementação e permite exercitar as seções sem subir a aplicação nem criar estado global de Router/Query.
+O sidebar do Storybook acompanha a hierarquia atômica:
 
-| Grupo | Componentes/variações documentados |
+| Grupo | Exemplos |
 | --- | --- |
-| `Home/Destaques` | HeroCarousel e seus slides |
-| `Home/Busca` | Linha compacta de busca e ordenação mobile |
-| `Home/Catálogo` | Abas, filtros e seção completa em estados carregado, carregando, vazio e erro; preço, destaque e paginação têm stories próprias |
-| `UI/Select` | Select customizado em modo normal e compacto, incluindo controles por teclado |
-| `Home/Conteúdo editorial` | HomeEditorial, PromoHighlights e BlogSection |
-| `Home/Rodapé` | Benefícios e newsletter |
-| `Home/Chamada mobile` | Newsletter compacta |
-| `Home/Visão geral` | Home completa com fixtures, independente do Router e da API |
+| `Design System/Atoms` | Button, Input e tokens do tema |
+| `Design System/Molecules` | Card, Select e Pagination |
+| `Marketplace/Molecules` | NFT card, busca/ordenação, abas e faixa de preço |
+| `Home/Organisms` | Hero, filtros, catálogo e blocos editoriais |
+| `Home/Templates` | Home completa com fixtures, sem Router ou API |
+| `Favorites/Templates` | Lista salva em estados populated, vazio, carregando e erro |
 
-Para desenvolver e revisar a documentação localmente:
+Stories são colocadas junto da camada/componente e documentam intenção, props, estados e acessibilidade. Para conferir localmente:
 
 ```bash
 npm run storybook
 npm run build-storybook
 ```
 
-O primeiro comando abre o catálogo interativo em `http://localhost:6006`; o segundo gera o pacote estático ignorado pelo Git em `storybook-static/`.
-
 ## Composição responsiva
 
-- **Mobile, até 760 px:** preserva a tela Kurio existente, com campo compacto de busca, hero com fundo SVG, abas roláveis, grade de duas colunas com alternância vertical e navegação inferior.
-- **Tablet, 761–1050 px:** exibe cabeçalho e rodapé, hero em duas colunas, grade de três colunas e margens menores para manter o conteúdo confortável.
-- **Desktop, a partir de 1051 px:** usa a estrutura da frame “Desktop / Início” do Figma: cabeçalho Kurio, hero em duas colunas, catálogo com filtros laterais e grade de três colunas, duas promoções editoriais, quatro artigos e rodapé com benefícios, inscrição e links.
+- **Mobile, até 760 px:** busca compacta, hero com SVG, abas roláveis, grade de duas colunas e navegação inferior.
+- **Tablet, 761–1050 px:** cabeçalho/rodapé, hero em duas colunas, grade de três colunas e margens menores.
+- **Desktop, a partir de 1051 px:** navegação superior, hero em duas colunas, filtros laterais, catálogo, promos, artigos e rodapé.
 
-O conteúdo e as consultas são compartilhados nos breakpoints. Apenas a disposição visual muda. Respeitamos `prefers-reduced-motion` na rotação do carrossel e as imagens usam texto alternativo e fallback local. Os links internos do topo e das coleções do rodapé usam rotas com hash; alterações de filtro, ordenação e página mantêm a rolagem. O retorno/avanço do navegador restaura os parâmetros da URL.
+O conteúdo e as consultas são compartilhados nos breakpoints; apenas a disposição visual muda. Respeitamos `prefers-reduced-motion`, imagens têm fallback local, os filtros permanecem na URL e o histórico do navegador recupera os valores e a rolagem.
 
-Os mocks entregam 54 NFTs distribuídos pelas nove categorias e três redes. A resposta de catálogo inclui contagens calculadas a partir do inventário completo e limites reais de preço. Cada página contém nove resultados; busca, preço, rede, categoria e ordem são aplicados em conjunto antes da paginação.
+## Catálogo de demonstração
+
+Os mocks entregam 54 NFTs distribuídos pelas nove categorias e três redes. A resposta inclui contagens do inventário completo e limites de preço. Cada página tem nove itens; busca, preço, rede, categoria e ordenação são aplicados antes da paginação.
 
 ## Referência Figma
 
-A frame desktop “Desktop / Início” mede 1440 × 3668 px, tem margens laterais de 120 px, espaçamento vertical de 96 px entre seções e agrupa Top, Products, Promos, Blog e Footer. O protótipo inicia a sequência na Home: navegação superior, hero com título à esquerda e artwork à direita, filtros de coleções/preço/rede ao lado de uma grade com três colunas, dois cards promocionais, quatro cards editoriais e um rodapé com benefícios, newsletter e navegação.
-
-A estrutura desktop agora segue essa composição. Os assets originais das obras do Figma ainda não estão no repositório, então as imagens dos cards/promos/blog usam as fixtures atuais e `/images/artwork-fallback.svg` como fallback. O hero mobile mantém o SVG de fundo `public/images/hero-background.svg`; no desktop a imagem principal ocupa o painel de artwork sem o fundo decorativo mobile.
-
-## Pontos de evolução
-
-- Substituir os dados derivados do mock por facets equivalentes quando a API real estiver conectada.
-- Ligar a ação de salvar card ao fluxo de favoritos.
-- Substituir os dados temporários dos cards editoriais pelos textos finais do Figma.
-- Expandir os cenários Playwright e baselines visuais para cobrir a tela completa nos breakpoints desktop.
+A frame desktop “Desktop / Início” mede 1440 × 3668 px e organiza Top, Products, Promos, Blog e Footer. Os assets originais das obras não estão no repositório; a interface usa fixtures e `/images/artwork-fallback.svg`. O hero mobile preserva o SVG `public/images/hero-background.svg`.

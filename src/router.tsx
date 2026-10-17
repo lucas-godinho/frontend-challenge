@@ -1,7 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Link } from '@tanstack/react-router'
-import { AppShell } from '@/components/layout/AppShell'
-import { HomePage } from '@/features/home/HomePage'
-import { FavoritesPage } from '@/features/favorites/FavoritesPage'
+import { AppShell } from '@/components/organisms/AppShell'
+import { HomePage } from '@/features/home/pages/HomePage'
+import { FavoritesPage } from '@/features/favorites/pages/FavoritesPage'
 import type { CatalogQuery } from '@/types/marketplace'
 
 function SearchNotFound() {

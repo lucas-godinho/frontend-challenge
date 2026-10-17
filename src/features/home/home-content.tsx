@@ -1,4 +1,4 @@
-import type { HeroSlide } from './HeroCarousel'
+import type { HeroSlide } from './organisms/HeroCarousel'
 import type { PromoItem } from './home-types'
 
 export const homeHeroSlides: HeroSlide[] = [
