@@ -5,23 +5,27 @@ import { catalogFixture } from '@/mocks/fixtures'
 import { NftCardContent } from '@/features/catalog/NftCard'
 import { CatalogSection } from './CatalogSection'
 import type { CatalogViewState } from './CatalogResults'
+import { queryCatalog } from '@/mocks/catalog'
 
 function CatalogSectionExample({ status = 'success' }: { status?: CatalogViewState['status'] }) {
   const [draft, setDraft] = useState('')
   const [search, setSearch] = useState<CatalogQuery>({ sort: 'recent' })
+  const data = queryCatalog(search)
   const state: CatalogViewState = status === 'loading'
     ? { status }
     : status === 'error'
       ? { status, onRetry: () => undefined }
       : status === 'empty'
         ? { status }
-        : { status: 'success', items: catalogFixture }
+        : data.total ? { status: 'success', items: data.items } : { status: 'empty' }
 
   return <main className="page-wrap"><CatalogSection
     search={search}
     draft={draft}
     onDraftChange={setDraft}
-    onUpdate={(next) => setSearch((current) => ({ ...current, ...next }))}
+    onUpdate={(next) => setSearch((current) => ({ ...current, ...next, page: next.page ?? 1 }))}
+    catalogData={data}
+    featuredNft={catalogFixture[0]}
     state={state}
     renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/></article>}
   /></main>

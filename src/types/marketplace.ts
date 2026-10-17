@@ -7,7 +7,8 @@ export interface Nft {
   priceEth: string
   available: number
   edition: number
-  category: 'art' | 'collectible' | 'music' | 'virtual-world'
+  category: 'art' | 'photo' | 'music' | '3d' | 'collectible' | 'generative' | 'games' | 'membership' | 'utility'
+  network: 'Ethereum' | 'Polygon' | 'Solana'
   featured: boolean
   version: number
 }
@@ -17,6 +18,13 @@ export interface CatalogResponse {
   page: number
   pageSize: number
   total: number
+  facets: CatalogFacets
+}
+
+export interface CatalogFacets {
+  categories: Array<{ value: string; label: string; count: number }>
+  networks: Array<{ value: string; count: number }>
+  price: { min: number; max: number }
 }
 
 export interface CatalogQuery {
@@ -24,6 +32,9 @@ export interface CatalogQuery {
   category?: string
   sort?: 'recent' | 'price-asc' | 'price-desc'
   page?: number
+  minPrice?: number
+  maxPrice?: number
+  network?: string
 }
 
 export interface ApiError {

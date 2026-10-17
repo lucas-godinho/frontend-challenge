@@ -5,6 +5,8 @@
 | Área | Arquivo | Responsabilidade |
 | --- | --- | --- |
 | Shell | `src/components/layout/AppShell.tsx` | Cabeçalho, Outlet, navegação mobile e rodapé |
+| Select custom | `src/components/ui/select.tsx` | Ordenação com listbox tematizado, teclado e fechamento acessível |
+| Paginação | `src/components/ui/pagination.tsx` | Janela de páginas responsiva ligada aos dados da API e à URL |
 | Página/estado | `src/features/home/HomePage.tsx` | Integra Router e Query, mantém os parâmetros da URL e converte o resultado remoto para estado de apresentação |
 | Composição | `src/features/home/HomeContent.tsx` | Compõe a Home sem acoplar a apresentação ao Router ou à query |
 | Conteúdo inicial | `src/features/home/home-content.tsx` | Dados dos slides, promoções e artigos usados pela Home e pelas stories |
@@ -12,6 +14,8 @@
 | Busca | `src/features/home/CatalogSearch.tsx` | Campo de busca, ordenação e linha compacta de busca mobile |
 | Abas | `src/features/home/CatalogTabs.tsx` | Navegação entre categorias do catálogo |
 | Filtros | `src/features/home/CatalogFilters.tsx` | Filtros de catálogo usados nos breakpoints suportados |
+| Faixa de preço | `src/features/home/PriceRangeFilter.tsx` | Sliders mínimo/máximo em uma trilha, sem cruzamento e sincronizados à URL |
+| NFT em destaque | `src/features/home/FeaturedNft.tsx` | Oferta editorial exibida sob os filtros desktop |
 | Resultados | `src/features/home/CatalogResults.tsx` | Grade e estados explícitos de carregamento, erro, vazio e sucesso |
 | Seção de catálogo | `src/features/home/CatalogSection.tsx` | Compõe busca, abas, filtros e resultados |
 | Promoções | `src/features/home/PromoHighlights.tsx` | Cards promocionais reutilizáveis, alimentados por itens ou dados próprios |
@@ -31,7 +35,8 @@ As stories ficam junto dos componentes (`*.stories.tsx`) e usam autodocs. Isso m
 | --- | --- |
 | `Home/Destaques` | HeroCarousel e seus slides |
 | `Home/Busca` | Linha compacta de busca e ordenação mobile |
-| `Home/Catálogo` | Abas, filtros e seção completa em estados carregado, carregando, vazio e erro |
+| `Home/Catálogo` | Abas, filtros e seção completa em estados carregado, carregando, vazio e erro; preço, destaque e paginação têm stories próprias |
+| `UI/Select` | Select customizado em modo normal e compacto, incluindo controles por teclado |
 | `Home/Conteúdo editorial` | HomeEditorial, PromoHighlights e BlogSection |
 | `Home/Rodapé` | Benefícios e newsletter |
 | `Home/Chamada mobile` | Newsletter compacta |
@@ -52,7 +57,9 @@ O primeiro comando abre o catálogo interativo em `http://localhost:6006`; o seg
 - **Tablet, 761–1050 px:** exibe cabeçalho e rodapé, hero em duas colunas, grade de três colunas e margens menores para manter o conteúdo confortável.
 - **Desktop, a partir de 1051 px:** usa a estrutura da frame “Desktop / Início” do Figma: cabeçalho Kurio, hero em duas colunas, catálogo com filtros laterais e grade de três colunas, duas promoções editoriais, quatro artigos e rodapé com benefícios, inscrição e links.
 
-O conteúdo e as consultas são compartilhados nos breakpoints. Apenas a disposição visual muda. Respeitamos `prefers-reduced-motion` na rotação do carrossel e as imagens usam texto alternativo e fallback local.
+O conteúdo e as consultas são compartilhados nos breakpoints. Apenas a disposição visual muda. Respeitamos `prefers-reduced-motion` na rotação do carrossel e as imagens usam texto alternativo e fallback local. Os links internos do topo e das coleções do rodapé usam rotas com hash; alterações de filtro, ordenação e página mantêm a rolagem. O retorno/avanço do navegador restaura os parâmetros da URL.
+
+Os mocks entregam 54 NFTs distribuídos pelas nove categorias e três redes. A resposta de catálogo inclui contagens calculadas a partir do inventário completo e limites reais de preço. Cada página contém nove resultados; busca, preço, rede, categoria e ordem são aplicados em conjunto antes da paginação.
 
 ## Referência Figma
 
@@ -62,8 +69,7 @@ A estrutura desktop agora segue essa composição. Os assets originais das obras
 
 ## Pontos de evolução
 
-- Exportar e substituir pelas imagens originais do Figma quando os assets estiverem disponíveis no projeto.
-- Ligar os filtros desktop de faixa de preço e rede aos parâmetros da API.
+- Substituir os dados derivados do mock por facets equivalentes quando a API real estiver conectada.
 - Ligar a ação de salvar card ao fluxo de favoritos.
-- Trocar artwork temporário pelos assets exportados do Figma.
-- Cobrir larguras desktop com cenários Playwright e baselines visuais após confirmar o frame de vitrine desktop.
+- Substituir os dados temporários dos cards editoriais pelos textos finais do Figma.
+- Expandir os cenários Playwright e baselines visuais para cobrir a tela completa nos breakpoints desktop.

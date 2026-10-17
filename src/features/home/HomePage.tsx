@@ -31,8 +31,10 @@ export function HomePage() {
   }, [isCarouselPaused])
 
   const update = (next: Partial<CatalogQuery>) => void navigate({
-    search: (current: CatalogQuery) => ({ ...current, ...next, page: 1 }),
+    search: (current: CatalogQuery) => ({ ...current, ...next, page: next.page ?? 1 }),
     replace: false,
+    resetScroll: false,
+    hashScrollIntoView: false,
   })
 
   return <HomeContent
@@ -40,6 +42,8 @@ export function HomePage() {
     draft={draft}
     activeSlide={activeSlide}
     catalogState={catalogState}
+    catalogData={catalog.data}
+    isFetching={catalog.isFetching}
     featuredItems={featuredCatalog.data?.items ?? []}
     onDraftChange={setDraft}
     onUpdate={update}

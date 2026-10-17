@@ -27,7 +27,10 @@ const indexRoute = createRoute({
     q: typeof search.q === 'string' ? search.q : undefined,
     category: typeof search.category === 'string' ? search.category : undefined,
     sort: ['recent', 'price-asc', 'price-desc'].includes(String(search.sort)) ? search.sort as CatalogQuery['sort'] : 'recent',
-    page: Math.max(1, Number(search.page) || 1),
+    page: Number.isFinite(Number(search.page)) ? Math.max(1, Math.floor(Number(search.page))) : 1,
+    minPrice: search.minPrice !== undefined && Number.isFinite(Number(search.minPrice)) ? Math.max(0, Number(search.minPrice)) : undefined,
+    maxPrice: search.maxPrice !== undefined && Number.isFinite(Number(search.maxPrice)) ? Math.max(0, Number(search.maxPrice)) : undefined,
+    network: typeof search.network === 'string' ? search.network.split(',').filter((value) => ['Ethereum', 'Polygon', 'Solana'].includes(value)).join(',') || undefined : undefined,
   }),
   component: HomePage,
 })
@@ -36,7 +39,7 @@ const placeholderRoutes = ['/cart', '/checkout', '/favorites', '/login', '/regis
   .map((path) => createRoute({ getParentRoute: () => rootRoute, path, component: PlaceholderPage }))
 const routeTree = rootRoute.addChildren([indexRoute, detailRoute, ...placeholderRoutes])
 
-export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 0 })
+export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 0, scrollRestoration: true })
 
 declare module '@tanstack/react-router' {
   interface Register { router: typeof router }

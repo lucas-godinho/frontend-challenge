@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { Nft } from '@/types/marketplace'
 import { NftCardContent } from './NftCard'
 
-const sample: Nft = { id: 'orbital-01', name: 'Orbital Bloom #01', collection: 'Soft Forms', creator: 'Mika Sato', image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=900&q=85', priceEth: '0.84', available: 8, edition: 24, category: 'art', featured: true, version: 1 }
+const sample: Nft = { id: 'orbital-01', name: 'Orbital Bloom #01', collection: 'Soft Forms', creator: 'Mika Sato', image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=900&q=85', priceEth: '0.84', available: 8, edition: 24, category: 'art', network: 'Ethereum', featured: true, version: 1 }
 
 function NftCardPreview({ nft }: { nft: Nft }) {
   return <article className="nft-card w-[300px]"><NftCardContent nft={nft} index={2}/></article>

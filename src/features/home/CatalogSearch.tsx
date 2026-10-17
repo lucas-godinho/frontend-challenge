@@ -1,5 +1,6 @@
 import { Search, SlidersHorizontal } from 'lucide-react'
 import type { CatalogQuery } from '@/types/marketplace'
+import { Select } from '@/components/ui/select'
 
 export function CatalogSearchForm({ draft, onDraftChange, onSubmit, placeholder }: {
   draft: string
@@ -19,15 +20,9 @@ export function CatalogSortSelect({ value, onChange, mobile = false }: {
   onChange: (value: NonNullable<CatalogQuery['sort']>) => void
   mobile?: boolean
 }) {
-  return <label className={mobile ? 'mobile-filter' : 'filter-select'}>
-    <SlidersHorizontal size={mobile ? 19 : 16}/>
-    <span className="sr-only">Ordenar NFTs</span>
-    <select aria-label="Ordenar NFTs" value={value ?? 'recent'} onChange={(event) => onChange(event.target.value as NonNullable<CatalogQuery['sort']>)}>
-      <option value="recent">Mais recentes</option>
-      <option value="price-asc">Menor preço</option>
-      <option value="price-desc">Maior preço</option>
-    </select>
-  </label>
+  return <Select label="Ordenar NFTs" compact={mobile} icon={mobile ? <SlidersHorizontal size={19}/> : undefined}
+    value={value ?? 'recent'} onChange={(next) => onChange(next as NonNullable<CatalogQuery['sort']>)}
+    options={[{ value: 'recent', label: 'Listados recentemente' }, { value: 'price-asc', label: 'Menor preço' }, { value: 'price-desc', label: 'Maior preço' }]}/>
 }
 
 export function MobileSearchRow({ search, draft, onDraftChange, onUpdate }: {

@@ -59,10 +59,13 @@ export function AppShell() {
     <header className="topbar">
       <Link to="/" className="wordmark">Kurio<span>®</span></Link>
       <nav aria-label="Principal" className="main-nav">
-        <Link to="/" className={pathname === '/' ? 'active' : ''}>Início</Link><a href="#catalog">Mercado</a><a href="#artists">Criadores</a><a href="#blog">Aprenda</a>
+        <Link to="/" className={pathname === '/' ? 'active' : ''}>Início</Link>
+        <Link to="/" hash="catalog" resetScroll={false} activeProps={{ className: '' }}>Mercado</Link>
+        <Link to="/" hash="creators" resetScroll={false} activeProps={{ className: '' }}>Criadores</Link>
+        <Link to="/" hash="blog" resetScroll={false} activeProps={{ className: '' }}>Aprenda</Link>
       </nav>
       <div className="top-actions">
-        <a href="#catalog" aria-label="Buscar"><Search size={21}/></a>
+        <Link to="/" hash="catalog" resetScroll={false} aria-label="Buscar"><Search size={21}/></Link>
         <Link className="desktop-cart-link" to="/cart" aria-label="Carrinho"><ShoppingCart size={21}/><span>6</span></Link>
         <Link className="desktop-login-link" to="/login"><LogIn size={18}/> Entrar</Link>
         <Link className="mobile-account-link" to="/login" aria-label="Minha conta"><UserRound size={19}/></Link>
@@ -98,7 +101,7 @@ export function AppShell() {
       <div className="footer-links">
         <section><h2>Meu perfil</h2><a href="#profile">Meu perfil</a><a href="#collection">Minha coleção</a><a href="#activity">Atividade</a><a href="#creator">Estúdio do criador</a><a href="#wishlist">Lista de interesse</a></section>
         <section><h2>Central de ajuda</h2><a href="#help">Central de ajuda</a><a href="#buying">Como comprar NFTs</a><a href="#wallet">Carteira e segurança</a><a href="#policy">Política do mercado</a><a href="#report">Denunciar item</a></section>
-        <section><h2>Coleções</h2><a href="#digital-art">Arte digital</a><a href="#photo">Fotografia</a><a href="#music">Música</a><a href="#3d">Arte 3D</a><a href="#utility">Utilidade</a></section>
+        <section><h2>Coleções</h2><Link to="/" search={{ category: 'art' }} hash="catalog" resetScroll={false}>Arte digital</Link><Link to="/" search={{ category: 'photo' }} hash="catalog" resetScroll={false}>Fotografia</Link><Link to="/" search={{ category: 'music' }} hash="catalog" resetScroll={false}>Música</Link><Link to="/" search={{ category: '3d' }} hash="catalog" resetScroll={false}>Arte 3D</Link><Link to="/" search={{ category: 'utility' }} hash="catalog" resetScroll={false}>Utilidade</Link></section>
         <section><h2>Redes sociais</h2><div className="social-links"><a href="#facebook" aria-label="Facebook">f</a><a href="#instagram" aria-label="Instagram">◎</a><a href="#twitter" aria-label="Twitter">t</a><a href="#linkedin" aria-label="LinkedIn">in</a></div><h2>Carteiras compatíveis</h2><p className="wallet-list">METAMASK · WALLETCONNECT · COINBASE</p></section>
       </div>
       <p className="footer-copyright">© 2026 Kurio. Propriedade digital para todos.</p>
