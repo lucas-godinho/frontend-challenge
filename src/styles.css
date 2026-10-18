@@ -29,6 +29,62 @@
   --radius-lg: var(--radius);
 }
 
+/*
+ * Menu mobile (MobileNavigation.tsx).
+ *
+ * Gera as classes `ease-nav` e `animate-nav-*`, usadas no componente.
+ *
+ * Regras para não quebrar o posicionamento:
+ * - O círculo de destaque é posicionado pelo componente (left/top), então os keyframes
+ *   dele NÃO podem ter translate.
+ * - O ícone já sobe pela classe [&_svg]:-translate-y-[var(--nav-icon-lift)] (com transition).
+ *   Os keyframes *-select rodam no <a> pai e só descrevem o "balanço" relativo
+ *   (overshoot e retorno): terminam em identidade, sem translateY fixo.
+ */
+@theme {
+  --ease-nav: cubic-bezier(0.22, 0.8, 0.25, 1);
+
+  --animate-nav-highlight-enter: nav-highlight-enter 360ms var(--ease-nav) both;
+  --animate-nav-cutout-enter: nav-cutout-enter 360ms var(--ease-nav) both;
+  --animate-nav-home-select: nav-home-select 620ms var(--ease-nav) both;
+  --animate-nav-heart-select: nav-heart-select 620ms var(--ease-nav) both;
+  --animate-nav-cart-select: nav-cart-select 620ms var(--ease-nav) both;
+  --animate-nav-profile-select: nav-profile-select 620ms var(--ease-nav) both;
+
+  @keyframes nav-highlight-enter {
+    from { opacity: 0.55; transform: scale(0.25); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes nav-cutout-enter {
+    from { transform: scale(0.25); }
+    to { transform: scale(1); }
+  }
+  @keyframes nav-home-select {
+    0% { transform: translateY(0) scale(1); }
+    38% { transform: translateY(-8px) scale(1.07); }
+    68% { transform: translateY(2px) scale(0.96); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  @keyframes nav-heart-select {
+    0% { transform: translateY(0) scale(1) rotate(0); }
+    35% { transform: translateY(-5px) scale(1.11) rotate(-10deg); }
+    68% { transform: translateY(2px) scale(0.91) rotate(4deg); }
+    100% { transform: translateY(0) scale(1) rotate(0); }
+  }
+  @keyframes nav-cart-select {
+    0% { transform: translateY(0) rotate(0); }
+    32% { transform: translateY(-8px) rotate(-8deg); }
+    62% { transform: translateY(2px) rotate(4deg); }
+    100% { transform: translateY(0) rotate(0); }
+  }
+  @keyframes nav-profile-select {
+    0% { transform: translateY(0) scale(0.88); }
+    42% { transform: translateY(-6px) scale(1.09); }
+    70% { transform: translateY(1px) scale(0.97); }
+    100% { transform: translateY(0) scale(1); }
+  }
+}
+
 :root {
   color-scheme: dark;
   font-family: var(--font-body);
@@ -197,38 +253,6 @@ button {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-5px) scale(1.015); }
 }
-@keyframes nav-hover-highlight-enter {
-  from { opacity: 0.55; transform: translateX(-50%) scale(0.25); }
-  to { opacity: 1; transform: translateX(-50%) scale(1); }
-}
-@keyframes nav-hover-cutout-enter {
-  from { transform: scale(0.25); }
-  to { transform: scale(1); }
-}
-@keyframes nav-home-select {
-  0% { transform: translateY(0) scale(1); }
-  38% { transform: translateY(-53px) scale(1.16); }
-  68% { transform: translateY(-43px) scale(1.04); }
-  100% { transform: translateY(-45px) scale(1.08); }
-}
-@keyframes nav-heart-select {
-  0% { transform: translateY(0) scale(1); }
-  35% { transform: translateY(-50px) scale(1.2) rotate(-10deg); }
-  68% { transform: translateY(-43px) scale(0.98) rotate(4deg); }
-  100% { transform: translateY(-45px) scale(1.08) rotate(0); }
-}
-@keyframes nav-cart-select {
-  0% { transform: translateY(0) scale(1); }
-  32% { transform: translateY(-53px) rotate(-8deg); }
-  62% { transform: translateY(-43px) rotate(4deg); }
-  100% { transform: translateY(-45px) scale(1.08) rotate(0); }
-}
-@keyframes nav-profile-select {
-  0% { transform: translateY(0) scale(0.88); }
-  42% { transform: translateY(-51px) scale(1.18); }
-  70% { transform: translateY(-44px) scale(1.05); }
-  100% { transform: translateY(-45px) scale(1.08); }
-}
 
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -243,7 +267,3 @@ button {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
-
-
-
-
