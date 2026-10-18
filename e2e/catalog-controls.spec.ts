@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { catalogResults } from './support/selectors'
 import { queryCatalog } from '../src/mocks/catalog'
 import { catalogFixture } from '../src/mocks/fixtures'
 
@@ -25,11 +26,11 @@ test('desktop filters preserve scroll and restore price through browser history'
   const category = page.getByRole('button', { name: 'Fotografia (6)', exact: true })
   const before = await page.evaluate(() => window.scrollY)
   await category.click()
-  await expect(page.locator('.catalog-results')).toHaveAttribute('aria-busy', 'false')
-  await expect(page.locator('.nft-grid .nft-card-link')).toHaveCount(6)
+  await expect(catalogResults(page)).toHaveAttribute('aria-busy', 'false')
+  await expect(catalogResults(page).getByRole('article')).toHaveCount(6)
   expect(Math.abs(await page.evaluate(() => window.scrollY) - before)).toBeLessThan(5)
   await category.click()
-  await expect(page.locator('.nft-grid .nft-card-link')).toHaveCount(9)
+  await expect(catalogResults(page).getByRole('article')).toHaveCount(9)
   const minimum = page.getByRole('slider', { name: 'Preço mínimo', exact: true })
   await minimum.focus()
   await minimum.press('ArrowRight')
@@ -38,21 +39,24 @@ test('desktop filters preserve scroll and restore price through browser history'
   await expect(page).toHaveURL(/minPrice=0\.04/)
   await page.goBack()
   await expect(minimum).toHaveValue('0.02')
-  await expect(page.getByRole('region', { name: 'NFT em destaque', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'NFT em destaque', exact: true })).toBeVisible()
 })
 
 test('custom sort supports keyboard and pagination works after sorting', async ({ page }) => {
   await page.goto('/')
   const sort = page.getByRole('combobox', { name: 'Ordenar NFTs' }).filter({ visible: true })
   await sort.click()
-  await sort.press('End')
-  await sort.press('Enter')
+  const highestPrice = page.getByRole('option', { name: 'Maior preço' })
+  await expect(highestPrice).toBeVisible()
+  await page.keyboard.press('End')
+  await expect(highestPrice).toHaveAttribute('data-highlighted', '')
+  await page.keyboard.press('Enter')
   await expect(page).toHaveURL(/sort=price-desc/)
-  await expect(page.locator('.catalog-results')).toHaveAttribute('aria-busy', 'false')
-  const first = await page.locator('.nft-grid .nft-card-link').first().getAttribute('href')
+  await expect(catalogResults(page)).toHaveAttribute('aria-busy', 'false')
+  const first = await catalogResults(page).getByRole('link').first().getAttribute('href')
   await page.getByRole('button', { name: 'Página 2', exact: true }).click()
   await expect(page).toHaveURL(/page=2/)
-  await expect(page.locator('.catalog-results')).toHaveAttribute('aria-busy', 'false')
-  expect(await page.locator('.nft-grid .nft-card-link').first().getAttribute('href')).not.toBe(first)
+  await expect(catalogResults(page)).toHaveAttribute('aria-busy', 'false')
+  expect(await catalogResults(page).getByRole('link').first().getAttribute('href')).not.toBe(first)
   await expect(page.getByRole('button', { name: 'Página 2', exact: true })).toHaveAttribute('aria-current', 'page')
 })

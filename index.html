@@ -5,9 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#140D0A" />
     <meta name="description" content="Explore uma curadoria de NFTs e descubra sua próxima peça." />
+    <script>
+      const path = window.location.pathname
+      const params = new URLSearchParams(window.location.search)
+      const defaultCatalog = path === '/' && (!params.has('q') && !params.has('category') && !params.has('network') && !params.has('minPrice') && !params.has('maxPrice')) && (params.get('sort') === null || params.get('sort') === 'recent') && (params.get('page') === null || params.get('page') === '1')
+      const image = defaultCatalog
+        ? (window.matchMedia('(max-width: 760px)').matches ? '/images/nft-3.jpg' : '/images/nft-2.jpg')
+        : path === '/nft/orbital-01' ? '/images/nft-1.jpg' : null
+      if (image) {
+        const preload = document.createElement('link')
+        preload.rel = 'preload'
+        preload.as = 'image'
+        preload.href = image
+        preload.fetchPriority = 'high'
+        document.head.append(preload)
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Kurio — NFT Marketplace</title>
   </head>
   <body>
+    <div id="boot-loader" role="status" aria-label="Carregando a coleção Kurio">
+      <style>
+        #boot-loader{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#140d0a;color:#f5f1eb;font:14px/1.5 'Roboto Mono',ui-monospace,monospace;text-align:center}
+        #boot-loader .boot-content{display:grid;justify-items:center;gap:18px;width:min(100%,360px)}
+        #boot-loader .boot-wordmark{font-size:14px;font-weight:700;letter-spacing:.2em}
+        #boot-loader .boot-message{margin:0;color:#cfb28c}
+        #boot-loader .boot-artwork{display:grid;grid-template-columns:.78fr 1fr .78fr;align-items:center;gap:10px;width:min(100%,300px);perspective:800px}
+        #boot-loader img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #3f2319;border-radius:14px;background:#241612;box-shadow:0 14px 36px #0006;animation:boot-art-float 1.8s ease-in-out infinite alternate}
+        #boot-loader img:first-child{transform:rotate(-7deg);animation-delay:-.6s}
+        #boot-loader img:last-child{transform:rotate(7deg);animation-delay:-1.2s}
+        #boot-loader img:nth-child(2){z-index:1;animation-delay:-.2s}
+        #boot-loader .boot-progress{overflow:hidden;width:116px;height:2px;background:#3f2319}
+        #boot-loader .boot-progress::after{display:block;width:45%;height:100%;background:#d28a4c;content:'';animation:boot-progress 1.4s ease-in-out infinite alternate}
+        @keyframes boot-art-float{from{translate:0 0}to{translate:0 -8px}}
+        @keyframes boot-progress{from{translate:-100% 0}to{translate:220% 0}}
+        @media(prefers-reduced-motion:reduce){#boot-loader img,#boot-loader .boot-progress::after{animation:none}}
+      </style>
+      <div class="boot-content">
+        <span class="boot-wordmark">KURIO</span>
+        <div class="boot-artwork" aria-hidden="true">
+          <img src="/images/nft-3.jpg" alt="" fetchpriority="high" />
+          <img src="/images/nft-1.jpg" alt="" fetchpriority="high" />
+          <img src="/images/nft-2.jpg" alt="" fetchpriority="high" />
+        </div>
+        <p class="boot-message">Preparando sua próxima descoberta</p>
+        <div class="boot-progress" aria-hidden="true"></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

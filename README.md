@@ -1,6 +1,6 @@
 # Kurio — NFT Marketplace
 
-Implementação inicial do desafio definido em [CHALLENGE.md](CHALLENGE.md). O projeto usa React 19, TypeScript estrito, TanStack Router/Query, Axios, Tailwind CSS, MSW, Storybook, Playwright, Socket.IO Client e Lighthouse.
+Marketplace responsivo do desafio definido em [CHALLENGE.md](CHALLENGE.md). O projeto usa React 19, TypeScript estrito, TanStack Router/Query, Axios, Tailwind CSS, MSW, Storybook, Playwright, Socket.IO Client e Lighthouse.
 
 ## Requisitos
 
@@ -21,10 +21,49 @@ Abra http://localhost:5173. MSW é ativado automaticamente em desenvolvimento e 
 | --- | --- | --- |
 | `VITE_API_URL` | `/api` | Base do Axios |
 | `VITE_MOCKS` | dev/demo: `true`; produção: `false` | Ativa os handlers REST do MSW |
-| `VITE_MOCK_SCENARIO` | `default` | Cenário de mock a selecionar (em expansão) |
-| `VITE_SOCKET_URL` | vazio | Origem do serviço Socket.IO; o cliente só conecta quando o endpoint está configurado e MSW está desativado |
+| `VITE_MOCK_SCENARIO` | `default` | Cenário REST inicial opcional; eventos realtime usam a chave de localStorage abaixo |
+| `VITE_SOCKET_URL` | vazio | Origem do serviço Socket.IO; produção conecta apenas com a URL configurada e MSW desativado |
 
-O mock atual entrega catálogo e detalhe por fixtures. Resetar o navegador (ou abrir sessão privada) restaura as fixtures; autenticação e cenários de checkout ainda serão implementados. Não existem credenciais de demonstração neste bootstrap.
+O mock entrega catálogo, detalhe, carrinho, sessão, perfil, carteiras e pedidos por REST. Em dev e no build demo, o MSW também intercepta o WebSocket usado pelo Socket.IO Client e fornece eventos tipados de catálogo e pedido. Para selecionar cenário realtime antes de carregar o app, defina `localStorage['kurio:mock-scenario']` no DevTools ou em um teste Playwright:
+
+| Cenário | Resultado |
+| --- | --- |
+| `default` | compra confirmada pela API; sem evento de mudança de NFT |
+| `nft-price-change` | publica `nft.updated` com o preço de Orbital Bloom alterado para `0.85 ETH` |
+| `nft-sold-out` | publica `nft.updated` com disponibilidade zero |
+| `nft-duplicate-stale` | publica atualização de catálogo duplicada e uma versão antiga |
+| `slow-catalog` | atrasa as respostas de catálogo, detalhe e carrinho para exercitar skeletons |
+| `variable-catalog-latency` | atrasa mais uma busca por `Blue` que a busca mais recente para exercitar respostas fora de ordem |
+| `catalog-503` | mantém o catálogo em 503 até o teste liberar a nova tentativa |
+| `catalog-network-error` | simula indisponibilidade de rede no catálogo |
+| `order-pending-confirmed` | compra começa pendente e `order.updated` confirma depois |
+| `order-pending-rejected` | compra começa pendente e `order.updated` a recusa depois |
+| `order-duplicate-stale` | confirma uma compra e publica evento duplicado e versão antiga |
+| `order-timeout-after-create` | perde a primeira resposta após gravar o pedido; nova tentativa recupera o mesmo pedido pela chave de idempotência |
+| `checkout-price-change-once` | altera o preço antes da validação REST do pedido e exige nova confirmação |
+| `checkout-sold-out-once` | esgota a edição antes da validação REST do pedido |
+| `checkout-coupon-expired-once` | invalida o cupom antes da validação REST do pedido |
+| `wallet-connect-rejected` | simula a recusa de conexão da carteira; o usuário pode tentar novamente |
+
+O mock Socket.IO implementa somente o enquadramento textual mínimo Engine.IO v4/Socket.IO necessário à aplicação; veja [Arquitetura](ARCHITECTURE.md#tempo-real) para limitações. O carrinho de visitante é migrado para a conta ao entrar; carrinho e favoritos ficam separados por usuário depois da autenticação. O checkout salva um recibo imutável e envia uma chave `Idempotency-Key` por tentativa.
+
+Credenciais fictícias para demonstração:
+
+| E-mail | Senha |
+| --- | --- |
+| `ana@kurio.test` | `Kurio123!` |
+| `rafael@kurio.test` | `Kurio123!` |
+
+O cadastro cria uma sessão e persiste apenas o hash da senha nos dados simulados. Para restaurar integralmente o cenário conhecido, execute no console da aplicação. O reset apaga contas e dados de demonstração criados neste navegador, inclusive marcadores de falha, conexões, favoritos e o cenário selecionado; o reload restaura as fixtures e os dois usuários seed.
+
+```js
+for (const key of Object.keys(localStorage)) {
+  if (key.startsWith('kurio:')) localStorage.removeItem(key)
+}
+location.assign('/')
+```
+
+O tempo de confirmação dos cenários pendentes pode ser controlado por `localStorage['kurio:mock-order-delay-ms']` (milissegundos; padrão 700). A regressão com duas abas usa relógio controlado e 60.000 ms para verificar que a confirmação preserva itens e quantidades adicionados depois da criação do pedido.
 
 ## Comandos
 
@@ -41,16 +80,18 @@ npm run test:e2e          # Playwright desktop e mobile
 npm run test:e2e:ui       # Playwright UI
 npm run test:visual       # Regressão visual mobile e desktop
 npm run test:visual:update # Atualizar baselines após revisão visual
-npm run audit:lighthouse  # LHCI desktop/mobile, três execuções por página
+npm run audit:lighthouse  # Lighthouse desktop/mobile, três execuções por página
 ```
 
-O Playwright cobre fluxos E2E e compara screenshots baseline da Home em Chromium desktop/mobile. Para revisar uma mudança intencional no layout: `npm run test:e2e -- --update-snapshots`. O primeiro uso pode exigir `npx playwright install chromium`. Relatórios ficam em `playwright-report/`, snapshots em `e2e/visual-regression.spec.ts-snapshots/` e traces de falhas em `test-results/`. Lighthouse grava HTML/JSON em `artifacts/lighthouse/`.
+O Playwright cobre fluxos E2E e compara screenshots baseline da Home, detalhe, carrinho e pagamento em Chromium desktop/mobile. Ele inicia seu próprio servidor em `127.0.0.1:5174`, com porta estrita, e não reutiliza o servidor de desenvolvimento. No checkout limpo, instale o navegador com `npm run test:e2e:install` antes de `npm run test:e2e`. Para revisar uma mudança intencional no layout: `npm run test:e2e -- --update-snapshots`. Se já houver Chrome ou Edge no sistema, a configuração os detecta automaticamente; também é possível apontar `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` para outro executável. Relatórios ficam em `playwright-report/`, snapshots em `e2e/visual-regression.spec.ts-snapshots/` e traces de falhas em `test-results/`.
+
+O runner Lighthouse inicia um preview do build em porta livre e um perfil Chrome novo por medição. `CHROME_PATH` pode apontar para o Chrome instalado; na ausência dessa variável, usa o Chromium instalado pelo Playwright. Grava cada HTML/JSON e um `summary.json` com medianas, ambiente e versões em `artifacts/lighthouse/validated/<data>/`. Uma amostra exploratória pode ser executada com `node scripts/audit-lighthouse.mjs --profile=mobile --page=home --runs=1`; ela não atende ao requisito de três medições. O comando completo falha se alguma mediana não atingir Performance 95, Accessibility 95, Best Practices 95 ou SEO 90.
 
 ## Cenários atuais e planejados
 
-O catálogo REST suporta sucesso, resultado vazio por busca e recurso inexistente. Com `VITE_SOCKET_URL` configurada e MSW desativado, o cliente Socket.IO assina os NFTs visíveis e aplica eventos `nft.updated` ao cache do TanStack Query, validando versões crescentes. A demonstração não inclui um servidor Socket.IO; o desafio não fornece backend em tempo real. Latência e injeção determinística de falhas, sessão expirada, conflito, cupons, timeout idempotente e pagamento confirmado/recusado ainda precisam entrar nos handlers MSW. A configuração `VITE_MOCK_SCENARIO` está reservada, mas ainda não altera os mocks.
+O catálogo REST suporta sucesso, resultado vazio por busca, recurso inexistente, respostas lentas/fora de ordem e falhas de rede/5xx com nova tentativa. O cliente Socket.IO assina NFTs visíveis no catálogo e no checkout, valida versões/eventos duplicados e sincroniza o cache TanStack Query; no demo, MSW simula alterações de preço/estoque e transições de pedido pendente/recusado. `e2e/realtime.spec.ts`, `e2e/network-scenarios.spec.ts`, `e2e/checkout-resilience.spec.ts` e `e2e/responsive-layout.spec.ts` verificam esses casos, recuperação de conexão de carteira e ausência de overflow a 390, 768 e 1440 px. Os handlers REST cobrem sessão expirada, conflito de cadastro, cupons válidos/inválidos, revalidação de preço/estoque/cupom, falha de conexão após criação e recuperação idempotente do mesmo pedido. O backend real Socket.IO precisa ser fornecido pelo serviço de produção.
 
-A rota `/` lê busca, ordenação, categoria e página da URL; detalhe tem acesso direto e as rotas restantes estão registradas como placeholders. O arquivo Figma está acessível em modo de visualização. O tema Kurio aplica tokens Tailwind/shadcn, tipografia local e a estrutura mobile exportados pelo Figma, com os quatro artworks locais em `public/images/`.
+A rota `/` lê busca, ordenação, categoria e página da URL. `/nft/:id` consulta o detalhe diretamente; `/cart` permite editar itens e aplicar os cupons `KURIO10` (10%) e `LAUNCH` (desconto de 0,08 ETH). `/checkout` finaliza com carteira e dados do colecionador, e `/orders/:id` recupera o recibo salvo. Login/cadastro aparecem em modal no desktop e página dedicada no mobile. `/profile` permite editar dados, avatar e senha; `/wallets` permite cadastrar, editar e remover carteiras. Esses fluxos privados exigem sessão. O tema Kurio usa tokens Tailwind/shadcn, tipografia local e os quatro artworks de `public/images/`.
 
 ## Deploy
 
@@ -60,5 +101,9 @@ A configuração `vercel.json` faz fallback das rotas SPA para `index.html`. Pub
 
 - [Escopo original do desafio](CHALLENGE.md)
 - [Decisões, contratos REST, cache e limites atuais](ARCHITECTURE.md)
+- [Contratos REST, cotação, idempotência e eventos](docs/API.md)
+- [Sistema de componentes shadcn/ui e Storybook](docs/DESIGN-SYSTEM.md)
+- [Matriz de aderência ao desafio e pendências de entrega](docs/CHALLENGE-COMPLIANCE.md)
 - [Home responsiva, componentes e breakpoints](docs/HOME.md)
+- [Resultados e procedimento Lighthouse](docs/PERFORMANCE.md)
 - Stories e documentação interativa da Home: `npm run storybook`

@@ -1,0 +1,30 @@
+import { expect, test } from '@playwright/test'
+import { catalogResults } from './support/selectors'
+
+test('serves valid crawler instructions and a linked favicon', async ({ page, request }) => {
+  const robots = await request.get('/robots.txt')
+  expect(robots.ok()).toBe(true)
+  await expect(robots.text()).resolves.toContain('User-agent: *\nAllow: /')
+
+  await page.goto('/')
+  const icon = page.locator('link[rel="icon"]')
+  await expect(icon).toHaveAttribute('href', '/favicon.svg')
+  const isMobile = await page.evaluate(() => window.matchMedia('(max-width: 760px)').matches)
+  const homePreload = page.locator('link[rel="preload"][as="image"]')
+  await expect(homePreload).toHaveAttribute('href', isMobile ? '/images/nft-3.jpg' : '/images/nft-2.jpg')
+  await expect(homePreload).toHaveAttribute('fetchpriority', 'high')
+  const catalogImages = catalogResults(page).getByRole('img')
+  await expect(catalogImages.nth(0)).toHaveAttribute('loading', 'eager')
+  await expect(catalogImages.nth(0)).toHaveAttribute('fetchpriority', 'high')
+  await expect(catalogImages.nth(1)).toHaveAttribute('loading', 'eager')
+  await expect(catalogImages.nth(1)).toHaveAttribute('fetchpriority', 'auto')
+  await expect(catalogImages.nth(3)).toHaveAttribute('loading', 'eager')
+  await expect(catalogImages.nth(4)).toHaveAttribute('loading', 'lazy')
+  await page.goto('/nft/orbital-01')
+  await expect(page.locator('link[rel="preload"][as="image"]')).toHaveAttribute('href', '/images/nft-1.jpg')
+  await page.goto('/?q=Blue')
+  await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(0)
+  const favicon = await request.get('/favicon.svg')
+  expect(favicon.ok()).toBe(true)
+  expect(favicon.headers()['content-type']).toContain('image/svg+xml')
+})

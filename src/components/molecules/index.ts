@@ -2,3 +2,4 @@ export { Card, CardContent, CardDescription, CardHeader, CardTitle } from './car
 export { Pagination } from './pagination'
 export { Select } from './select'
 export type { SelectOption } from './select'
+export { Dialog } from './dialog'

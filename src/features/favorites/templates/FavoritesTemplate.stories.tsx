@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { catalogFixture } from '@/mocks/fixtures'
-import { FavoriteButton, NftCardContent } from '@/features/catalog/molecules/NftCard'
+import { NftCardPreview } from '@/stories/NftCardPreview'
 import { FavoritesTemplate } from './FavoritesTemplate'
 
 const meta = {
@@ -8,7 +8,7 @@ const meta = {
   component: FavoritesTemplate,
   tags: ['autodocs'],
   args: { hasFavorites: true, items: catalogFixture.slice(0, 3), state: 'ready', onRetry: () => undefined, onExplore: () => undefined,
-    renderCard: (nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/><FavoriteButton nft={nft}/></article> },
+    renderCard: (nft, index) => <NftCardPreview nft={nft} index={index}/> },
   parameters: { layout: 'fullscreen', docs: { description: { component: 'Template visual da coleção salva. A page fornece as obras resolvidas e o estado da query; as stories não precisam do Router de produção ou de chamadas REST.' } } },
 } satisfies Meta<typeof FavoritesTemplate>
 

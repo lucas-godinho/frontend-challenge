@@ -5,11 +5,11 @@ import refresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist', 'storybook-static', 'playwright-report', 'test-results'] },
+  { ignores: ['dist', 'storybook-static', 'playwright-report', 'test-results', 'artifacts', '.lighthouseci'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.cjs'],
+    files: ['**/*.{cjs,mjs}'],
     languageOptions: { globals: globals.node },
   },
   {

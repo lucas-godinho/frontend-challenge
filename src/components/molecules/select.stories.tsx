@@ -5,7 +5,7 @@ import { Select } from './select'
 
 const meta = {
   title: 'Design System/Molecules/Select', component: Select, tags: ['autodocs'],
-  parameters: { docs: { description: { component: 'Select controlado com listbox customizado no tema Kurio. Setas, Home/End e digitação movem a opção; Enter/Espaço confirmam; Escape, Tab e clique externo fecham. O foco permanece no combobox.' } } },
+  parameters: { docs: { description: { component: 'Select controlado construído sobre Radix UI no padrão shadcn/ui e adaptado ao tema Kurio. Demonstra opções, seleção, teclado, foco e a variante compacta usada no mobile.' } } },
   args: { value: 'recent', label: 'Ordenar NFTs', options: [{ value: 'recent', label: 'Listados recentemente' }, { value: 'asc', label: 'Menor preço' }, { value: 'desc', label: 'Maior preço' }], onChange: () => undefined },
   render: function Example(args) {
     const [value, setValue] = useState(args.value)

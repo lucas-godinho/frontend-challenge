@@ -1,0 +1,40 @@
+import { expect, test } from '@playwright/test'
+
+test('a protected desktop route opens a centered login dialog and resumes after authentication', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop authentication is presented in a dialog')
+  await page.goto('/profile')
+
+  const overlay = page.locator('body > main#main')
+  const dialog = page.getByRole('dialog', { name: 'Entrar | Criar conta' })
+  await expect(overlay).toBeVisible()
+  await expect(dialog).toBeVisible()
+  await expect(page).toHaveURL(/\/profile$/)
+  const bounds = await dialog.boundingBox()
+  const viewport = page.viewportSize()
+  expect(bounds).not.toBeNull()
+  expect(viewport).not.toBeNull()
+  expect(Math.abs(bounds!.x + bounds!.width / 2 - viewport!.width / 2)).toBeLessThan(4)
+  expect(Math.abs(bounds!.y + bounds!.height / 2 - viewport!.height / 2)).toBeLessThan(4)
+
+  await page.getByPlaceholder('Digite seu e-mail').fill('ana@kurio.test')
+  await page.locator('#account-password').fill('Kurio123!')
+  await expect(page.getByPlaceholder('Digite seu e-mail')).toHaveValue('ana@kurio.test')
+  await expect(page.locator('#account-password')).toHaveValue('Kurio123!')
+  await dialog.locator('form').getByRole('button', { name: 'Entrar', exact: true }).click()
+  await expect(dialog).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Perfil do colecionador' })).toBeVisible()
+})
+
+test('desktop authentication dialog traps keyboard focus and closes with Escape', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop authentication is presented in a dialog')
+  await page.goto('/profile')
+  const dialog = page.getByRole('dialog', { name: 'Entrar | Criar conta' })
+  const close = dialog.getByRole('button', { name: 'Fechar janela de autenticação' })
+  await expect(close).toBeFocused()
+  await page.keyboard.press('Shift+Tab')
+  await expect(page.getByRole('button', { name: 'Crie uma conta' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(close).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+})

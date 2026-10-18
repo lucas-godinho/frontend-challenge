@@ -1,8 +1,9 @@
+import { PageContainer } from '@/components/organisms/PageContainer'
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CatalogQuery } from '@/types/marketplace'
 import { catalogFixture } from '@/mocks/fixtures'
-import { FavoriteButton, NftCardContent } from '@/features/catalog/molecules/NftCard'
+import { NftCardPreview } from '@/stories/NftCardPreview'
 import { CatalogSection } from './CatalogSection'
 import type { CatalogViewState } from './CatalogResults'
 import { queryCatalog } from '@/mocks/catalog'
@@ -19,7 +20,7 @@ function CatalogSectionExample({ status = 'success' }: { status?: CatalogViewSta
         ? { status }
         : data.total ? { status: 'success', items: data.items } : { status: 'empty' }
 
-  return <main className="page-wrap"><CatalogSection
+  return <PageContainer><CatalogSection
     search={search}
     draft={draft}
     onDraftChange={setDraft}
@@ -27,8 +28,8 @@ function CatalogSectionExample({ status = 'success' }: { status?: CatalogViewSta
     catalogData={data}
     featuredNft={catalogFixture[0]}
     state={state}
-    renderCard={(nft, index) => <article className="nft-card"><NftCardContent nft={nft} index={index}/><FavoriteButton nft={nft}/></article>}
-  /></main>
+    renderCard={(nft, index) => <NftCardPreview nft={nft} index={index}/>}
+  /></PageContainer>
 }
 
 const meta = {

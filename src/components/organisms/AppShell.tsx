@@ -1,109 +1,82 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, Outlet, useRouterState } from '@tanstack/react-router'
-import { Heart, House, LogIn, Search, ShoppingCart, UserRound } from 'lucide-react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
+import { LogIn, Search, ShoppingCart, UserRound } from 'lucide-react'
+import { Button } from '@/components/atoms/button'
+import { cn } from '@/lib/cn'
+import { MobileNavigation } from './MobileNavigation'
+import { SiteFooter } from './SiteFooter'
+import { useCart } from '@/features/cart/use-cart'
+import { useSession, useSessionActions } from '@/features/account/use-session'
 
-function CartIcon() {
-  return <svg width="16" height="15" viewBox="0 0 18 17" fill="none" aria-hidden="true">
-    <path d="M17.5 5.13468L16.5564 11.1111C16.3848 12.2896 15.4412 13.0471 14.2402 13.0471H6.0049C4.88971 13.0471 3.86029 12.2054 3.68873 11.1111L2.65931 4.12458L2.40196 2.18855C2.31618 1.6835 1.88725 1.3468 1.28676 1.3468H0.686274C0.343137 1.3468 0 1.0101 0 0.673401C0 0.3367 0.343137 0 0.686274 0H1.28676C2.48775 0 3.51716 0.841751 3.60294 2.0202L3.77451 3.367H15.9559C16.3848 3.367 16.8137 3.53535 17.0711 3.87205C17.4142 4.20876 17.5 4.71381 17.5 5.13468Z" fill="currentColor"/>
-    <path d="M14.4118 16.6667C14.8855 16.6667 15.2696 16.2898 15.2696 15.8249C15.2696 15.36 14.8855 14.9832 14.4118 14.9832C13.938 14.9832 13.5539 15.36 13.5539 15.8249C13.5539 16.2898 13.938 16.6667 14.4118 16.6667Z" fill="currentColor"/>
-    <path d="M5.83333 16.6667C6.30711 16.6667 6.69118 16.2898 6.69118 15.8249C6.69118 15.36 6.30711 14.9832 5.83333 14.9832C5.35956 14.9832 4.97549 15.36 4.97549 15.8249C4.97549 16.2898 5.35956 16.6667 5.83333 16.6667Z" fill="currentColor"/>
-  </svg>
-}
-
-function CenterActionIcon() {
-  return <svg width="27" height="24" viewBox="0 0 27 24" fill="none" aria-hidden="true">
-    <path d="M13.3819 12.8913C9.28498 12.8913 5.18803 12.8913 1.09108 12.8906C0.961448 12.8906 0.827342 12.8943 0.702176 12.8667C0.25441 12.7684 -0.0480741 12.337 0.00631347 11.893C0.060701 11.4482 0.439924 11.1114 0.913021 11.1092C1.98364 11.1032 3.055 11.1062 4.12561 11.1062C11.3234 11.1062 18.5212 11.107 25.719 11.1084C25.8575 11.1084 26.0013 11.1047 26.1347 11.136C26.5743 11.2396 26.8641 11.6553 26.8179 12.0919C26.7702 12.5389 26.3947 12.8868 25.9246 12.8891C24.7139 12.8965 23.504 12.8928 22.2933 12.8928C19.3228 12.8928 16.3524 12.8928 13.3827 12.8928C13.3819 12.8928 13.3819 12.8921 13.3819 12.8913Z" fill="currentColor"/>
-    <path d="M10.5553 24.0002C9.20453 23.7976 7.81951 23.7216 6.51123 23.3654C3.76503 22.6167 2.19524 20.7243 1.7445 17.9274C1.57761 16.8926 1.47479 15.8473 1.35559 14.8057C1.28332 14.1762 1.58357 13.7634 2.13191 13.6956C2.67653 13.6286 3.07587 13.9817 3.13622 14.5278C3.26586 15.708 3.35601 16.8978 3.57877 18.0615C3.98109 20.1633 5.70212 21.6288 7.83664 21.8165C8.84617 21.9052 9.8542 22.0177 10.8607 22.1339C11.5953 22.2188 11.9343 23.0347 11.4948 23.6314C11.3048 23.89 11.0805 23.9637 10.5553 24.0002Z" fill="currentColor"/>
-    <path d="M25.4463 9.39819C25.4307 9.53528 25.4321 9.67758 25.3949 9.8087C25.3077 10.1186 25.0015 10.3779 24.7422 10.3831C24.3004 10.3921 23.7998 10.0643 23.6977 9.65001C23.6247 9.35572 23.6225 9.0443 23.5822 8.74107C23.4571 7.78444 23.3967 6.81366 23.1881 5.87566C22.7604 3.95571 21.5326 2.73758 19.6142 2.32259C18.4743 2.07599 17.2971 1.99999 16.1363 1.84726C16.0075 1.83013 15.8756 1.82417 15.7504 1.79213C15.331 1.68559 15.0583 1.287 15.1112 0.870521C15.17 0.407854 15.5269 0.0539627 15.9732 0.0859992C17.5042 0.195519 19.0427 0.30653 20.5119 0.776646C22.8633 1.52988 24.3451 3.15778 24.9054 5.53965C25.2012 6.79876 25.3018 8.10332 25.4903 9.38701C25.4761 9.39148 25.4612 9.39446 25.4463 9.39819Z" fill="currentColor"/>
-    <path d="M25.4224 14.8807C25.2988 16.1673 25.2086 17.5807 24.8167 18.9441C24.0777 21.5145 21.8962 23.2891 19.2372 23.5491C18.1554 23.6549 17.0781 23.8106 15.9992 23.944C15.617 23.9917 15.2013 23.6229 15.1208 23.1647C15.0404 22.7058 15.3287 22.255 15.7832 22.1939C16.3263 22.1202 16.8776 22.106 17.4208 22.033C18.3223 21.913 19.2565 21.8803 20.1133 21.6083C21.97 21.0197 23.007 19.6638 23.279 17.7453C23.4235 16.7254 23.5308 15.7002 23.6336 14.675C23.6932 14.082 24.0799 13.6685 24.6007 13.6983C25.1043 13.7273 25.4515 14.1744 25.4224 14.8807Z" fill="currentColor"/>
-    <path d="M1.3295 9.27513C1.52768 7.95493 1.62081 6.60791 1.9449 5.319C2.60053 2.71063 4.34912 1.11849 6.95898 0.532893C8.1339 0.269151 9.34756 0.177512 10.5448 0.0173291C10.7266 -0.00725703 10.9226 -0.0087471 11.0984 0.0329749C11.5119 0.130574 11.7548 0.509797 11.7153 0.940427C11.6736 1.39117 11.3681 1.69068 10.9285 1.73985C9.84748 1.86055 8.7642 1.97081 7.68688 2.1228C5.4108 2.44316 3.83356 4.02338 3.52363 6.28456C3.37536 7.36933 3.2569 8.45857 3.1295 9.54632C3.07809 9.98441 2.70185 10.3122 2.24217 10.3063C1.79589 10.3003 1.41518 9.94492 1.39059 9.50833C1.38612 9.43457 1.38985 9.36007 1.38985 9.28556C1.36973 9.28184 1.34961 9.27886 1.3295 9.27513Z" fill="currentColor"/>
-  </svg>
-}
+const AuthPage = lazy(() => import('@/features/account/pages/AuthPage').then((module) => ({ default: module.AuthPage })))
 
 export function AppShell() {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
-  const navRef = useRef<HTMLElement>(null)
-  const [navWidth, setNavWidth] = useState(390)
-  const [hoveredTab, setHoveredTab] = useState<number | null>(null)
-  const activeTab = pathname === '/' ? 0 : pathname.startsWith('/favorites') ? 1 : pathname.startsWith('/cart') ? 3 : pathname.startsWith('/profile') ? 4 : -1
-  const navHorizontalInset = 20
-  const centerNotch = navWidth / 2
-  const hoverCenter = hoveredTab === null
-    ? null
-    : navHorizontalInset + (navWidth - navHorizontalInset * 2) * (hoveredTab * 0.2 + 0.1)
-  const navNotchRadius = 42
-  const hoverNotchRadius = navNotchRadius
-  const navShape = `M 8 31 H ${navWidth - 8} Q ${navWidth} 31 ${navWidth} 39 V 98 Q ${navWidth} 126 ${navWidth - 28} 126 H 28 Q 0 126 0 98 V 39 Q 0 31 8 31 Z`
-
+  const navigate = useNavigate()
+  const cart = useCart()
+  const cartItemCount = cart.data?.itemCount ?? 0
+  const session = useSession()
+  const sessionActions = useSessionActions()
+  const [authMode, setAuthMode] = useState<'login' | 'register' | null>(null)
+  const [authReturnTo, setAuthReturnTo] = useState<string | null>(null)
+  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia('(min-width: 761px)').matches)
+  const isMobileAuthRoute = !isDesktop && (pathname === '/login' || pathname === '/register')
   useEffect(() => {
-    const nav = navRef.current
-    if (!nav) return
-    const resizeObserver = new ResizeObserver(() => {
-      if (nav.clientWidth > 0) setNavWidth(nav.clientWidth)
-    })
-    resizeObserver.observe(nav)
-    return () => resizeObserver.disconnect()
+    const media = window.matchMedia('(min-width: 761px)')
+    const updateViewport = () => setIsDesktop(media.matches)
+    media.addEventListener('change', updateViewport)
+    return () => media.removeEventListener('change', updateViewport)
   }, [])
 
-  const tabs = [
-    { to: '/', label: 'Início', icon: <House size={16} fill="currentColor"/> },
-    { to: '/favorites', label: 'Favoritos', icon: <Heart size={16} fill="currentColor"/> },
-    { id: 'scanner', label: 'Scanner de NFTs', icon: <CenterActionIcon/>, action: true },
-    { to: '/cart', label: 'Carrinho', icon: <CartIcon/> },
-    { to: '/profile', label: 'Perfil', icon: <UserRound size={16} fill="currentColor"/> },
-  ] as const
+  useLayoutEffect(() => {
+    const openRequiredAuth = (event: Event) => {
+      if (!window.matchMedia('(min-width: 761px)').matches) return
+      const detail = (event as CustomEvent<{ returnTo?: string }>).detail
+      setAuthReturnTo(detail?.returnTo ?? pathname)
+      setAuthMode('login')
+    }
+    window.addEventListener('kurio:auth-required', openRequiredAuth)
+    return () => window.removeEventListener('kurio:auth-required', openRequiredAuth)
+  }, [pathname])
 
-  return <>
-    <a className="skip-link" href="#main">Pular para o conteúdo</a>
-    <header className="topbar">
-      <Link to="/" className="wordmark">Kurio<span>®</span></Link>
-      <nav aria-label="Principal" className="main-nav">
-        <Link to="/" className={pathname === '/' ? 'active' : ''}>Início</Link>
-        <Link to="/" hash="catalog" resetScroll={false} activeProps={{ className: '' }}>Mercado</Link>
-        <Link to="/" hash="creators" resetScroll={false} activeProps={{ className: '' }}>Criadores</Link>
-        <Link to="/" hash="blog" resetScroll={false} activeProps={{ className: '' }}>Aprenda</Link>
+  useEffect(() => {
+    if (!isDesktop || (pathname !== '/login' && pathname !== '/register')) return
+    const params = new URLSearchParams(routerState.location.searchStr)
+    const requested = params.get('returnTo')
+    const safeReturnTo = requested?.startsWith('/') && !requested.startsWith('//') ? requested : null
+    setAuthMode(pathname === '/register' ? 'register' : 'login')
+    setAuthReturnTo(safeReturnTo)
+    void navigate({ to: (safeReturnTo ?? '/') as never, replace: true })
+  }, [isDesktop, navigate, pathname, routerState.location.searchStr])
+
+  const openAuth = (mode: 'login' | 'register') => {
+    setAuthReturnTo(pathname + routerState.location.searchStr)
+    setAuthMode(mode)
+  }
+  const closeAuth = useCallback(() => setAuthMode(null), [])
+
+  return <div className={cn('min-h-screen', !isMobileAuthRoute && 'max-[760px]:pb-[142px]')}>
+    <a className="fixed -left-full top-4 z-50 bg-popover p-3 text-foreground focus:left-4" href="#main">Pular para o conteúdo</a>
+    <header className="mx-auto hidden h-[76px] w-[90%] items-center justify-between border-b border-border min-[761px]:flex min-[1051px]:grid min-[1051px]:h-[70px] min-[1051px]:w-[min(calc(100%-240px),1200px)] min-[1051px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] min-[1051px]:gap-6">
+      <Link to="/" className="justify-self-start font-display text-2xl font-bold tracking-[-1.5px] min-[1051px]:text-base min-[1051px]:tracking-normal">Kurio<span className="ml-0.5 align-top text-[10px] text-primary min-[1051px]:hidden">®</span></Link>
+      <nav aria-label="Principal" className="flex items-center justify-center gap-4 text-xs text-muted-foreground min-[1051px]:h-full min-[1051px]:gap-10 min-[1051px]:text-sm">
+        <Link to="/" className={cn('relative flex items-center hover:text-accent hover:underline hover:underline-offset-4', pathname === '/' && 'font-bold text-primary min-[1051px]:after:absolute min-[1051px]:after:bottom-0 min-[1051px]:after:left-0 min-[1051px]:after:h-[3px] min-[1051px]:after:w-full min-[1051px]:after:bg-primary min-[1051px]:after:content-[\'\']')}>Início</Link>
+        <Link className="flex items-center hover:text-accent hover:underline hover:underline-offset-4" to="/" hash="catalog" resetScroll={false} activeProps={{ className: '' }}>Mercado</Link>
+        <Link className="flex items-center hover:text-accent hover:underline hover:underline-offset-4" to="/" hash="creators" resetScroll={false} activeProps={{ className: '' }}>Criadores</Link>
+        <Link className="flex items-center hover:text-accent hover:underline hover:underline-offset-4" to="/" hash="blog" resetScroll={false} activeProps={{ className: '' }}>Aprenda</Link>
       </nav>
-      <div className="top-actions">
-        <Link to="/" hash="catalog" resetScroll={false} aria-label="Buscar"><Search size={21}/></Link>
-        <Link className="desktop-cart-link" to="/cart" aria-label="Carrinho"><ShoppingCart size={21}/><span>6</span></Link>
-        <Link className="desktop-login-link" to="/login"><LogIn size={18}/> Entrar</Link>
-        <Link className="mobile-account-link" to="/login" aria-label="Minha conta"><UserRound size={19}/></Link>
+      <div className="flex items-center justify-end gap-4 min-[1051px]:gap-[30px]">
+        <Link className="grid place-items-center hover:text-accent" to="/" hash="catalog" resetScroll={false} aria-label="Buscar"><Search size={21}/></Link>
+        <Link className="relative grid place-items-center hover:text-accent" to="/cart" aria-label={`Carrinho${cartItemCount ? `, ${cartItemCount} itens` : ''}`}><ShoppingCart size={21}/>{cartItemCount > 0 && <span className="absolute -right-[9px] -top-2 grid size-[17px] place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">{cartItemCount}</span>}</Link>
+        {session.data
+          ? <><Button className="h-9 rounded-sm px-3 text-sm" asChild><Link to="/profile"><UserRound size={16}/> {session.data.user.name.split(' ')[0]}</Link></Button><Button variant="ghost" className="h-9 px-2 text-xs text-muted-foreground hover:text-accent" type="button" onClick={() => sessionActions.logout.mutate()} disabled={sessionActions.logout.isPending}>Sair</Button></>
+          : <Button className="h-9 rounded-sm px-3 text-sm" type="button" onClick={() => openAuth('login')}><LogIn size={18}/> Entrar</Button>}
       </div>
     </header>
     <div className="route-transition" key={pathname}><Outlet/></div>
-    <nav ref={navRef} className="mobile-nav" aria-label="Navegação mobile">
-      <svg className="mobile-nav-shape" viewBox={`0 0 ${navWidth} 126`} preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <mask id="mobile-nav-mask" x="0" y="0" width={navWidth} height="126" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-            <rect width={navWidth} height="126" fill="black"/><path d={navShape} fill="white"/><circle cx={centerNotch} cy="31" r={navNotchRadius} fill="black"/>
-            {hoverCenter !== null && hoveredTab !== 2 && <circle key={hoveredTab} className="mobile-nav-hover-cutout" cx={hoverCenter} cy="31" r={hoverNotchRadius} fill="black"/>}
-          </mask>
-        </defs>
-        <rect width={navWidth} height="126" fill="#241612" mask="url(#mobile-nav-mask)"/>
-      </svg>
-      {hoverCenter !== null && hoveredTab !== 2 && <span key={hoveredTab} className="mobile-nav-hover-highlight" style={{ left: hoverCenter }} aria-hidden="true"/>}
-      <span className="mobile-nav-action-highlight" aria-hidden="true"/>
-      <div className="mobile-nav-items">
-        {tabs.map((tab, index) => 'action' in tab ? <button
-          key={tab.id} type="button" className="mobile-nav-item mobile-nav-action is-highlighted" style={{ gridColumn: index + 1 }}
-          aria-label={`${tab.label} (em breve)`} disabled
-        >{tab.icon}</button> : <Link
-          key={tab.to} to={tab.to} className={`mobile-nav-item${activeTab === index ? ' is-active' : ''}${hoveredTab === index ? ' is-highlighted' : ''}`}
-          data-tab={tab.to === '/' ? 'home' : tab.to.slice(1)} style={{ gridColumn: index + 1 }} aria-label={tab.label} aria-current={activeTab === index ? 'page' : undefined}
-          onMouseEnter={() => setHoveredTab(index)} onMouseLeave={() => setHoveredTab(null)} onFocus={() => setHoveredTab(index)} onBlur={() => setHoveredTab(null)}
-        >{tab.icon}</Link>)}
-      </div>
-    </nav>
-    <footer className="site-footer">
-      <div className="footer-brand-strip"><strong className="wordmark">Kurio<span>®</span></strong><p>Feito para colecionadores,<br/>criadores e cultura</p><a href="mailto:contato@email.com">contato@email.com</a><a href="tel:+551140028922">+55 11 4002 8922</a></div>
-      <div className="footer-links">
-        <section><h2>Meu perfil</h2><a href="#profile">Meu perfil</a><a href="#collection">Minha coleção</a><a href="#activity">Atividade</a><a href="#creator">Estúdio do criador</a><a href="#wishlist">Lista de interesse</a></section>
-        <section><h2>Central de ajuda</h2><a href="#help">Central de ajuda</a><a href="#buying">Como comprar NFTs</a><a href="#wallet">Carteira e segurança</a><a href="#policy">Política do mercado</a><a href="#report">Denunciar item</a></section>
-        <section><h2>Coleções</h2><Link to="/" search={{ category: 'art' }} hash="catalog" resetScroll={false}>Arte digital</Link><Link to="/" search={{ category: 'photo' }} hash="catalog" resetScroll={false}>Fotografia</Link><Link to="/" search={{ category: 'music' }} hash="catalog" resetScroll={false}>Música</Link><Link to="/" search={{ category: '3d' }} hash="catalog" resetScroll={false}>Arte 3D</Link><Link to="/" search={{ category: 'utility' }} hash="catalog" resetScroll={false}>Utilidade</Link></section>
-        <section><h2>Redes sociais</h2><div className="social-links"><a href="#facebook" aria-label="Facebook">f</a><a href="#instagram" aria-label="Instagram">◎</a><a href="#twitter" aria-label="Twitter">t</a><a href="#linkedin" aria-label="LinkedIn">in</a></div><h2>Carteiras compatíveis</h2><p className="wallet-list">METAMASK · WALLETCONNECT · COINBASE</p></section>
-      </div>
-      <p className="footer-copyright">© 2026 Kurio. Propriedade digital para todos.</p>
-    </footer>
-  </>
+    {authMode && <Suspense fallback={null}><AuthPage mode={authMode} presentation="dialog" returnTo={authReturnTo} onClose={closeAuth} onModeChange={setAuthMode}/></Suspense>}
+    {!isMobileAuthRoute && <MobileNavigation/>}
+    <SiteFooter/>
+  </div>
 }

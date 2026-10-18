@@ -58,4 +58,4 @@ Os mocks entregam 54 NFTs distribuídos pelas nove categorias e três redes. A r
 
 ## Referência Figma
 
-A frame desktop “Desktop / Início” mede 1440 × 3668 px e organiza Top, Products, Promos, Blog e Footer. Quatro artworks locais são carregados pelas fixtures em `public/images/nft-1.png` até `nft-4.png`; o fallback é `/images/artwork-fallback.svg`. O hero mobile preserva o SVG `public/images/hero-background.svg`.
+A frame desktop “Desktop / Início” mede 1440 × 3668 px e organiza Top, Products, Promos, Blog e Footer. Quatro artworks locais em JPEG otimizado são carregados pelas fixtures em `public/images/nft-1.jpg` até `nft-4.jpg` (qualidade 92 para reduzir download sem mudança visual perceptível); o fallback é `/images/artwork-fallback.svg`. O fundo decorativo do hero mobile usa gradientes CSS equivalentes aos tons do asset original, evitando carregar uma imagem de fundo.

@@ -3,7 +3,13 @@ dist/
 storybook-static/
 playwright-report/
 test-results/
-artifacts/
+artifacts/*
+!artifacts/lighthouse/
+artifacts/lighthouse/*
+!artifacts/lighthouse/post-optimization/
+artifacts/lighthouse/post-optimization/*
+!artifacts/lighthouse/post-optimization/*.html
+!artifacts/lighthouse/post-optimization/*.json
 coverage/
 .env
 .env.local

@@ -6,7 +6,11 @@ module.exports = {
       startServerReadyTimeout: 30000,
       url: ['http://127.0.0.1:4173/', 'http://127.0.0.1:4173/nft/orbital-01'],
       numberOfRuns: 3,
-      settings: { preset: 'mobile', onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'] },
+      settings: {
+        formFactor: 'mobile',
+        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
+        chromeFlags: '--no-sandbox --disable-dev-shm-usage --disable-extensions',
+      },
     },
     assert: { preset: 'lighthouse:recommended' },
     upload: { target: 'filesystem', outputDir: './artifacts/lighthouse/mobile' },

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from '@/components/atoms/button'
 
 export function Pagination({ page, pageSize, total, onPageChange, disabled = false }: {
   page: number; pageSize: number; total: number; onPageChange: (page: number) => void; disabled?: boolean
@@ -17,11 +18,11 @@ export function Pagination({ page, pageSize, total, onPageChange, disabled = fal
     }
     slots.push(value)
   }
-  return <nav className="pagination" aria-label="Paginação do catálogo">
-    <button type="button" aria-label="Página anterior" disabled={disabled || current === 1} onClick={() => onPageChange(current - 1)}><ChevronLeft size={14}/></button>
-    {slots.map((value) => typeof value === 'string' ? <span key={value} aria-hidden="true">…</span>
-      : <button type="button" key={value} aria-label={`Página ${value}`} aria-current={value === current ? 'page' : undefined}
-        disabled={disabled} onClick={() => { if (value !== current) onPageChange(value) }}>{value}</button>)}
-    <button type="button" aria-label="Próxima página" disabled={disabled || current === pages} onClick={() => onPageChange(current + 1)}><ChevronRight size={14}/></button>
+  return <nav className="mt-8 flex items-center justify-center gap-1.5" aria-label="Paginação do catálogo">
+    <Button variant="outline" size="icon" className="size-10 rounded-sm" type="button" aria-label="Página anterior" disabled={disabled || current === 1} onClick={() => onPageChange(current - 1)}><ChevronLeft size={16}/></Button>
+    {slots.map((value) => typeof value === 'string' ? <span className="px-1 text-sm text-muted-foreground" key={value} aria-hidden="true">…</span>
+      : <Button variant={value === current ? 'default' : 'outline'} size="icon" className="size-10 rounded-sm text-sm" type="button" key={value} aria-label={`Página ${value}`} aria-current={value === current ? 'page' : undefined}
+        disabled={disabled} onClick={() => { if (value !== current) onPageChange(value) }}>{value}</Button>)}
+    <Button variant="outline" size="icon" className="size-10 rounded-sm" type="button" aria-label="Próxima página" disabled={disabled || current === pages} onClick={() => onPageChange(current + 1)}><ChevronRight size={16}/></Button>
   </nav>
 }

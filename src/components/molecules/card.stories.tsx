@@ -18,3 +18,6 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 export const Default: Story = {}
+export const SemanticaDeResumo: Story = {
+  render: () => <Card asChild className="max-w-md"><aside aria-labelledby="summary-card-title"><CardHeader><CardTitle id="summary-card-title">Resumo da carteira</CardTitle><CardDescription>Componente visual com semântica preservada.</CardDescription></CardHeader><CardContent>Subtotal: 0.84 ETH</CardContent></aside></Card>,
+}

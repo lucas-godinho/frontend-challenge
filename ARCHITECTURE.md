@@ -1,4 +1,4 @@
-# Arquitetura inicial
+# Arquitetura
 
 ## Organização
 
@@ -9,33 +9,62 @@
 - `src/types`: contratos de transporte e domínio.
 - `e2e`: fluxos Playwright; `.storybook`: catálogo de componentes.
 
-As telas previstas estão registradas no TanStack Router. Catálogo usa parâmetros de busca validados na URL e TanStack Query inclui todos os parâmetros na chave; alterações substituem o histórico e voltam à página 1. Queries recebem o `AbortSignal` do Query para descartar consultas obsoletas.
+As telas previstas estão registradas no TanStack Router. Catálogo usa parâmetros de busca validados na URL e TanStack Query inclui todos os parâmetros na chave; alterações criam entradas no histórico e voltam à página 1. Queries recebem o `AbortSignal` do Query para descartar consultas obsoletas. O catálogo usa `staleTime` de 30 s, GC em 5 min e uma nova tentativa automática para leituras antes de oferecer retry manual.
 
-## REST inicial
+O entry de inicialização carrega a interface e os mocks em paralelo. O shell pode renderizar durante a preparação do MSW; chamadas Axios aguardam `waitForMocks`. Os handlers WebSocket são registrados sob demanda antes de importar `socket.io-client`, preservando a interceptação da API WebSocket. O build demo silencia os logs de diagnóstico do MSW; desenvolvimento mantém os logs.
 
-Base URL: `/api` (configurável por `VITE_API_URL`). O MSW atualmente implementa `GET /nfts?q=&category=&sort=&page=` e `GET /nfts/:id`. Os recursos a completar mantêm este contrato planejado:
+## REST da demonstração
+
+Base URL: `/api` (configurável por `VITE_API_URL`). Os handlers MSW implementam catálogo, detalhe, conta, perfil, carteiras, carrinho, cupons e pedidos:
 
 | Método | Endpoint | Uso |
 | --- | --- | --- |
-| POST/GET/DELETE | `/session`, `/session`, `/session` | autenticação, recuperação e logout |
+| GET | `/cart` | consultar itens e subtotal |
+| POST | `/cart/items` | adicionar quantidade; retorna 409 se exceder o estoque |
+| PUT | `/cart/items/:id` | substituir quantidade; valida estoque |
+| DELETE | `/cart/items/:id` | remover item |
+| POST/DELETE | `/cart/coupon` | aplicar ou remover cupom `KURIO10`/`LAUNCH` |
+| GET/POST/DELETE | `/session` | consultar, iniciar e encerrar sessão |
+| POST | `/accounts` | cadastrar colecionador |
+| GET/PUT | `/profile` | consultar e editar perfil/avatar |
+| PUT | `/profile/password` | validar senha atual e persistir nova senha como hash |
+| GET/POST/DELETE | `/wallets` | listar, criar/editar e remover carteira |
+| GET/POST/DELETE | `/wallet-connection` | consultar, simular conexão e desconectar provedor de carteira |
+| POST/GET | `/orders`, `/orders/:id` | revalidar cotação, criar pedido com idempotência e recuperar recibo |
+
+O detalhe busca o NFT pela API e trata carregamento, falha e 404. Carrinhos e cupons ficam isolados por sessão no `localStorage`; o carrinho visitante é mesclado ao autenticar. Quantidades, descontos, taxas e totais são strings decimais calculadas em wei. A alteração otimista de quantidade e remoção reverte se a mutation falhar; após a resposta, o cache é sincronizado com a resposta REST. O checkout envia a cotação visível, incluindo preço e versão dos NFTs, cupom, desconto, taxa e total. O servidor compara esse snapshot com preço, estoque e cupom atuais e responde `409 QUOTE_CHANGED` ou `409 INVENTORY_CHANGED` quando necessário. A tela atualiza o resumo e exige um novo clique para confirmar os valores revistos. A criação de pedido recebe `Idempotency-Key`, persiste o snapshot de NFT/carteira/preço e remove do carrinho somente após confirmação simulada.
+
+Os recursos de conta e pedido usam estes contratos ativos:
+
+| Método | Endpoint | Uso |
+| --- | --- | --- |
+| POST/GET/DELETE | `/session` | autenticação, recuperação e logout |
 | POST | `/accounts` | cadastro |
-| GET | `/nfts`, `/nfts/:id` | catálogo e detalhe |
-| GET/PUT/DELETE | `/me/favorites` | favoritos isolados por conta |
-| GET/POST/PATCH/DELETE | `/cart/items` | carrinho persistente |
-| POST | `/quotes` | cotação, cupom, preço, disponibilidade e taxas |
+| GET/PUT | `/profile` | perfil e avatar |
+| PUT | `/profile/password` | alteração de senha |
+| GET/POST/DELETE | `/wallets` | carteiras principais e secundárias |
+| GET/POST/DELETE | `/wallet-connection` | conexão simulada persistida por usuário, incluindo recusa configurável |
 | POST/GET | `/orders`, `/orders/:id` | criar por `Idempotency-Key` e recuperar snapshot |
-| GET/PATCH | `/me/profile` | perfil e avatar |
-| GET/POST/PATCH | `/me/wallets` | carteiras |
 
 Erros usam `{ code, message, fields? }`, com HTTP 400 (validação), 401 (sessão), 403 (permissão), 404, 409 (conflito), 429 e 5xx. Quantias ETH são strings decimais; nunca devem ser convertidas a ponto flutuante para cálculo monetário. O snapshot de pedido é imutável.
 
+Ao confirmar um pedido, os handlers REST e Socket.IO compartilham `removePurchasedItems`: subtraem apenas as quantidades do snapshot do carrinho atual, preservando inclusões feitas em outras abas durante um pagamento pendente. A transição é executada uma única vez e estados terminais não são reaplicados. O teste de regressão usa duas abas, MSW REST, Socket.IO e relógio controlado.
+
 ## Sessão e cache
 
-A sessão simulada será persistida em storage sem credenciais em claro. Cache privado deve incluir o identificador da sessão na query key; logout/troca de usuário limpa queries privadas e fecha subscriptions antes de definir a nova sessão. Mutations de compra não repetem automaticamente. Catálogo usa `staleTime` de 30 s, GC em 5 min e retry único para leitura. Favoritos da demonstração atualmente mantêm IDs em `localStorage`; quando houver autenticação, migrar para o endpoint privado `/me/favorites` com atualização otimista e rollback.
+A sessão MSW usa `GET/POST/DELETE /session`; cadastro usa `POST /accounts` e cria uma sessão. Os usuários seed são `ana@kurio.test` e `rafael@kurio.test`, ambos com senha fictícia `Kurio123!`. O estado local guarda somente o ID da sessão, validade e hash de senha dos cadastros criados. Sessões expiram após sete dias e são revalidadas ao acessar rotas privadas ou após refresh.
+
+Favoritos são salvos em chaves locais separadas por usuário autenticado; o visitante usa uma chave própria, que não é mostrada ao acessar favoritos até entrar. O carrinho do visitante é migrado e mesclado ao carrinho da conta durante login/cadastro, com quantidades limitadas ao estoque; carrinhos das contas ficam isolados. Login/logout invalida o resumo do carrinho e remove caches privados de favoritos, perfil, carteiras e pedidos ao trocar de identidade. Mutations de compra não repetem automaticamente. Catálogo usa `staleTime` de 30 s, GC em 5 min e retry único para leitura.
 
 ## Tempo real
 
-`useCatalogRealtime` assina os IDs da página atual com `catalog.subscribe`, valida a versão crescente dos eventos `nft.updated` e atualiza as entradas de catálogo no TanStack Query. A limpeza remove o listener e encerra a conexão ao trocar os recursos observados ou desmontar a Home. O cliente só conecta quando `VITE_SOCKET_URL` está definida e MSW está desativado. O servidor Socket.IO não faz parte do desafio; o ambiente de demonstração mantém o realtime desligado. Eventos de pedidos já têm contrato tipado, mas ainda aguardam a feature de checkout.
+`src/lib/realtime.ts` instancia `socket.io-client` sob demanda, depois da inicialização do MSW, para que o mock intercepte o WebSocket antes de o cliente capturar a API global. Em produção, a conexão só abre quando `VITE_SOCKET_URL` está definida e MSW está desativado.
+
+`useCatalogRealtime` assina os IDs visíveis com `catalog.subscribe`; eventos `nft.updated` com versão crescente atualizam catálogo, detalhe e carrinho no TanStack Query. `useOrderRealtime` assina o pedido em `order.subscribe`, deduplica eventos por `eventId`, aplica somente versões mais novas e invalida o recibo para buscar a fonte REST autoritativa. Reconexões reassinam e revalidam os recursos.
+
+Na demonstração, `src/mocks/realtime.ts` usa o handler WebSocket do MSW e implementa apenas o enquadramento textual mínimo Engine.IO v4/Socket.IO usado pelo cliente neste app: abertura, namespace padrão, ping/pong e eventos JSON. Isso permite testar o cliente Socket.IO real sem servidor externo. O mock não implementa namespaces adicionais, salas, acknowledgements, payloads binários ou upgrades de transporte; não deve ser usado como servidor de produção. O serviço real precisa expor os eventos tipados documentados em `src/lib/realtime.ts`.
+
+Os cenários determinísticos ficam em `localStorage['kurio:mock-scenario']`: `nft-price-change` envia atualização de preço, `nft-sold-out` zera disponibilidade, `nft-duplicate-stale` envia duplicata e versão antiga, `order-pending-confirmed` e `order-pending-rejected` iniciam pedidos pendentes e depois enviam `order.updated`; `order-duplicate-stale` verifica deduplicação e ordenação de pedidos; `wallet-connect-rejected` simula recusa do provedor. A tela de checkout também assina os NFTs do carrinho. As suítes `e2e/realtime.spec.ts` e `e2e/checkout-resilience.spec.ts` verificam atualizações, reconexão/recuperação do pedido e conexão, recusa e desconexão de carteira. Sem chave, o cenário é `default` (compra confirmada pela API). Esses cenários exercitam mensagens Socket.IO reais interceptadas por MSW; os dados continuam simulados.
 
 ## Fidelidade visual e acessibilidade
 
@@ -43,8 +72,10 @@ O Figma está em modo de visualização. A Home mobile Kurio segue o frame de 41
 
 A Home desktop compartilha dados, estado e componentes com a composição mobile. Pages conectam infraestrutura, templates recebem props e organizam organisms, moléculas implementam tarefas pequenas e átomos mantêm os controles visuais base. Os átomos shadcn/ui vivem em `src/components/atoms`, usam Tailwind v4 e tokens CSS em `src/styles.css`; detalhes de composição responsiva continuam no CSS do tema. Veja [Atomic Design](docs/ATOMIC-DESIGN.md) para contratos/reuso e [Home responsiva](docs/HOME.md) para breakpoints e stories. O Storybook espelha essa hierarquia para revisão visual isolada.
 
-A Home inclui estados de loading com shimmer, erro com retry e resultado vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida. O Playwright executa fluxos E2E e screenshots baseline das primeiras dobras mobile e desktop; atualizar os arquivos de referência requer revisão visual.
+A Home, detalhe e resumo do carrinho incluem estados de loading com shimmer, erro e vazio. Redução de movimento, foco visível, skip link, labels e alt text estão no ponto de partida. O Playwright executa fluxos de conta, catálogo, acesso direto ao detalhe, carrinho, pedidos e eventos realtime, além de baselines visuais da Home, detalhe, carrinho e pagamento em desktop e mobile; atualizar os arquivos de referência requer revisão visual. Lighthouse CI tem configurações desktop e mobile em `lighthouserc.cjs` e `lighthouserc.mobile.cjs`; `npm run audit:lighthouse` gera os relatórios em `artifacts/lighthouse/` usando perfis Chrome temporários e sem extensões. O estado e a última amostra estão em [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
-## Limite do bootstrap
+## Telas e estado visual
 
-Esta entrega não completa compra, autenticação, perfil, carteiras, persistência coordenada entre recursos ou o conjunto completo de cenários de erro. REST e Socket.IO reais dependem dos endpoints de backend definidos no ambiente; MSW fornece os contratos de demonstração. Lighthouse é executado sobre o build demo em desktop/mobile, e o relatório deve ser lido junto aos limites da máquina e do navegador de auditoria.
+Login e cadastro usam o mesmo formulário de domínio em uma página mobile e em um modal desktop. O modal mantém o foco dentro da janela e fecha com Escape. Perfil e carteiras são formulários persistidos pelos handlers MSW. Checkout envia os dados da carteira e do colecionador, recupera o recibo por rota e exibe um snapshot imutável. Os componentes base `Button`, `Input`, `Card` e `Select` seguem os tokens e variantes shadcn configurados em `components.json`; a documentação interativa fica no Storybook.
+
+O mock inclui pedidos confirmados, pendentes, recusados e perda da primeira resposta após persistir o pedido, com recuperação pela chave de idempotência. O checkout revalida a cotação REST e acompanha preço/estoque via Socket.IO; um teste simula interrupção de rede com pedido pendente e verifica a retomada sem duplicação. O catálogo cobre latência variável, respostas fora de ordem e falhas de rede/5xx com retry do usuário. Os eventos reais dependem de um backend Socket.IO. Lighthouse continua configurado para o build demo e seus relatórios devem ser lidos junto aos limites da máquina e do navegador de auditoria.

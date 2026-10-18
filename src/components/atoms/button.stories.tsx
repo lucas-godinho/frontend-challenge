@@ -16,6 +16,8 @@ export const Primary: Story = {}
 export const Secondary: Story = { args: { variant: 'secondary', children: 'Cancelar' } }
 export const Outline: Story = { args: { variant: 'outline', children: 'Ver detalhes' } }
 export const Ghost: Story = { args: { variant: 'ghost', children: 'Mais opções' } }
+export const Destructive: Story = { args: { variant: 'destructive', children: 'Remover item' } }
+export const Loading: Story = { args: { disabled: true, children: 'Confirmando…', 'aria-busy': true } }
 export const Disabled: Story = { args: { disabled: true } }
 export const AsLink: Story = {
   render: () => <Button asChild variant="outline"><a href="#catalog">Ir para o catálogo</a></Button>,

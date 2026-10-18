@@ -1,0 +1,70 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Kurio/Guia do projeto" />
+
+# Kurio · catálogo de interface
+
+Este Storybook reúne o sistema visual, os componentes de domínio e as telas reais do marketplace. As stories de tela montam as rotas de produção com TanStack Router, TanStack Query e MSW; fixtures isoladas são usadas quando a intenção é estudar apenas uma composição visual.
+
+## Comece por aqui
+
+1. Abra **Design System / Atoms** para conhecer controles básicos, variações e estados.
+2. Continue em **Design System / Molecules** e **Marketplace / Molecules** para ver os controles compostos.
+3. Revise **Home / Organisms** e **Home / Templates** para acompanhar a composição da descoberta.
+4. Abra **Kurio / Telas e fluxos** para navegar pelas páginas reais e observar os estados da API simulada.
+5. Abra **Conta / Telas mobile de autenticação** para conferir login e cadastro no frame móvel de 390 px.
+6. Abra **Kurio / Experiência de carregamento** para revisar a cena Three.js e o fallback de artes.
+
+Rode `npm run storybook` para editar stories localmente ou `npm run build-storybook` para gerar a documentação estática. O build publica `public/` no Storybook, incluindo o service worker; MSW inicializa antes das stories e atende as chamadas REST e Socket.IO da demonstração.
+
+## Inventário do design system
+
+| Nível | Componentes | Stories |
+| --- | --- | --- |
+| Átomos | Button, Input, Label, PasswordInput, Textarea, Badge, Skeleton, Checkbox, Radio group, tokens de tema | `Design System / Atoms` |
+| Moléculas globais | Card, Select, Dialog, Pagination | `Design System / Molecules` |
+| Moléculas de catálogo | NFT card, busca, ordenação, abas, faixa de preço | `Marketplace / Molecules` |
+| Organismos da Home | Hero, catálogo, filtros, resultados, destaque NFT, editorial, blog, promoções e newsletter | `Home / Organisms` |
+| Templates | Home e Favoritos, com dados e callbacks fornecidos por props | `Home / Templates`, `Favorites / Templates` |
+| Shell | Cabeçalho, navegação mobile e rodapé dentro das stories de rota | `Kurio / Telas e fluxos` |
+
+Os componentes adaptados de shadcn/ui ficam versionados em `src/components/atoms`. As fachadas globais estão em `src/components/molecules`; componentes que conhecem NFTs ficam em `src/features/catalog`. As telas usam utilitários Tailwind e tokens do tema em `src/styles.css`. A escala e as responsabilidades estão descritas em [docs/DESIGN-SYSTEM.md](../../docs/DESIGN-SYSTEM.md) e [docs/ATOMIC-DESIGN.md](../../docs/ATOMIC-DESIGN.md).
+
+## Telas do desafio e estados
+
+As histórias desta seção usam as rotas, pages e componentes da aplicação. Dados de conta e compra são preparados antes da montagem de cada rota; a origem das respostas continua sendo MSW.
+
+| Tela | Story principal | Estados e variações |
+| --- | --- | --- |
+| Início e catálogo | `Kurio / Telas e fluxos / Inicio` | `Home / Organisms / Resultados do catálogo` cobre carregando, sucesso, sem resultados e falha. Filtros, busca e paginação têm stories próprios. |
+| Detalhe de NFT | `Kurio / Telas e fluxos / DetalheDoNft` | Obra encontrada pela rota, galeria, disponibilidade, quantidade, favoritos, carrinho e recomendações. |
+| Carrinho | `Kurio / Telas e fluxos / CarrinhoComItens` | `CarrinhoVazio` documenta estado vazio; a tela real permite quantidade, remoção e cupom. |
+| Pagamento | `Kurio / Telas e fluxos / Checkout` | Sessão e carrinho válidos, perfil, resumo, escolha e conexão de carteira. |
+| Confirmação | `Kurio / Telas e fluxos / ConfirmacaoDeCompra` | `PagamentoPendente` e `PagamentoRecusado` mostram estados terminais e em progresso do pedido. |
+| Login e cadastro | `Conta / Telas mobile de autenticação / Entrar` e `CriarConta` | Páginas reais no frame móvel. As stories `LoginDesktopModal` e `CadastroDesktopModal` mostram a apresentação desktop sobre a Home. |
+| Perfil | `Kurio / Telas e fluxos / Perfil` | Formulário carregado, campos de perfil e troca de senha. |
+| Carteiras | `Kurio / Telas e fluxos / Carteiras` | Carteira principal, dados preenchidos e formulário de adição. |
+| Favoritos | `Kurio / Telas e fluxos / Favoritos` | Dados isolados para a conta da demo e catálogo carregado. Estados de vazio/erro/loading continuam no template próprio. |
+
+As rotas de teste de apresentação são `/`, `/nft/orbital-01`, `/cart`, `/checkout`, `/orders/storybook-order`, `/favorites`, `/profile` e `/wallets`. Cada story cria um QueryClient novo, limpa os dados simulados anteriores e semeia somente os dados necessários para aquele cenário. A sessão da conta é fictícia e existe apenas no armazenamento de origem do Storybook.
+
+## Primeiro carregamento
+
+O documento HTML exibe um splash imediato com artes locais antes da montagem do React. Depois, a aplicação carrega Three.js de forma assíncrona e apresenta os mesmos NFTs em cartões 3D com órbitas e partículas. A cena sai ao terminar as consultas iniciais, respeitando um limite máximo para não bloquear a navegação. Se WebGL não estiver disponível, uma composição CSS mantém a animação; se a importação da cena falhar, o app continua com o shimmer dos cards da Home. Todas as etapas respeitam `prefers-reduced-motion`.
+
+Confira `Kurio / Experiência de carregamento` e `Home / Organisms / Resultados do catálogo / CarregandoObras`. A importação dinâmica mantém Three.js fora do bundle inicial e só acontece se ainda houver consultas após 240 ms; em carregamentos rápidos, o app não baixa a biblioteca. As artes são assets locais, sem dependência de fixtures. O splash evita uma área vazia, mas não substitui a medição do tempo real de conteúdo utilizável em [docs/PERFORMANCE.md](../../docs/PERFORMANCE.md).
+
+## Interação e acessibilidade
+
+- Os controles das stories podem ser acionados por teclado e exibem foco visível.
+- Checkbox, grupo de rádio, select e dialog documentam estados selecionados, desabilitados e foco/teclado.
+- Campos precisam manter `Label`, `aria-invalid` e `aria-describedby` associados quando houver erro.
+- Imagens informativas usam texto alternativo; arte usada como decoração no carregamento fica oculta da árvore acessível.
+- Skeletons usam `aria-busy` no contêiner e são ocultos da árvore acessível.
+- O addon **Accessibility** ajuda a inspecionar as stories. A regressão visual e os fluxos completos continuam no Playwright.
+
+## Rede e estado remoto
+
+As telas reais usam Axios para REST, TanStack Query para cache e MSW para simular respostas. A Storybook inicia os mesmos handlers e o transporte de eventos documentado em [docs/API.md](../../docs/API.md). Os eventos `nft.updated` e `order.updated` continuam passando pelo `socket.io-client`; dados fixos não substituem a integração.
+
+Latência, erros, idempotência, sessão e revalidação estão mapeados em [docs/CHALLENGE-COMPLIANCE.md](../../docs/CHALLENGE-COMPLIANCE.md), [ARCHITECTURE.md](../../ARCHITECTURE.md) e nos cenários de `e2e/`. Use `npm run test:e2e` para repetir os fluxos automatizados; o Storybook é a referência de estados e revisão visual dos componentes.

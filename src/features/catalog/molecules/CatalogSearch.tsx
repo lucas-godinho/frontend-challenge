@@ -2,6 +2,7 @@ import { Search, SlidersHorizontal } from 'lucide-react'
 import type { CatalogQuery } from '@/types/marketplace'
 import { Select } from '@/components/molecules/select'
 import { Input } from '@/components/atoms/input'
+import { Button } from '@/components/atoms/button'
 
 export function CatalogSearchForm({ draft, onDraftChange, onSubmit, placeholder }: {
   draft: string
@@ -9,12 +10,12 @@ export function CatalogSearchForm({ draft, onDraftChange, onSubmit, placeholder 
   onSubmit: () => void
   placeholder: string
 }) {
-  return <form className="search-box" onSubmit={(event) => { event.preventDefault(); onSubmit() }}>
-    <Search size={18}/>
+  return <form className="flex min-h-11 min-w-0 items-center gap-3 border border-border bg-card px-3 focus-within:border-primary" onSubmit={(event) => { event.preventDefault(); onSubmit() }}>
+    <Search className="shrink-0 text-muted-foreground" size={18}/>
     <Input aria-label="Buscar NFTs" placeholder={placeholder} value={draft}
-      className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm shadow-none outline-none ring-0 placeholder:text-muted-foreground focus-visible:ring-0"
+      className="h-10 min-w-0 flex-1 border-0 bg-transparent p-0 text-sm shadow-none outline-none ring-0 placeholder:text-muted-foreground focus-visible:ring-0"
       onChange={(event) => onDraftChange(event.target.value)}/>
-    {placeholder.startsWith('Buscar') && <button type="submit" aria-label="Buscar">↵</button>}
+    {placeholder.startsWith('Buscar') && <Button variant="ghost" size="icon" className="size-8 shrink-0 text-muted-foreground" type="submit" aria-label="Buscar">↵</Button>}
   </form>
 }
 
@@ -34,7 +35,7 @@ export function MobileSearchRow({ search, draft, onDraftChange, onUpdate }: {
   onDraftChange: (value: string) => void
   onUpdate: (query: Partial<CatalogQuery>) => void
 }) {
-  return <div className="mobile-search-row">
+  return <div className="mb-8 flex items-center gap-3 min-[761px]:hidden">
     <CatalogSearchForm draft={draft} onDraftChange={onDraftChange} onSubmit={() => onUpdate({ q: draft || undefined })} placeholder="Explorar coleções"/>
     <CatalogSortSelect mobile value={search.sort} onChange={(sort) => onUpdate({ sort })}/>
   </div>

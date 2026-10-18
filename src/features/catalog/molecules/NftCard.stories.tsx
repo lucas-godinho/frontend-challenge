@@ -1,14 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import type { Nft } from '@/types/marketplace'
-import { FavoriteButton, NftCardContent } from './NftCard'
+import { catalogFixture } from '@/mocks/fixtures'
+import { NftCardPreview } from '@/stories/NftCardPreview'
 
-const sample: Nft = { id: 'orbital-01', name: 'Orbital Bloom #01', collection: 'Soft Forms', creator: 'Mika Sato', image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=900&q=85', priceEth: '0.84', available: 8, edition: 24, category: 'art', network: 'Ethereum', featured: true, version: 1 }
-
-function NftCardPreview({ nft }: { nft: Nft }) {
-  return <article className="nft-card w-[300px]"><NftCardContent nft={nft} index={2}/><FavoriteButton nft={nft}/></article>
-}
-
-const meta = { title: 'Marketplace/Molecules/NFT card', component: NftCardPreview, args: { nft: sample }, tags: ['autodocs'], parameters: { docs: { description: { component: 'Card de domínio composto por mídia, metadados e ação de favorito. A ação aparece em hover, foco de teclado e dispositivos touch; os favoritos são persistidos localmente.' } } } } satisfies Meta<typeof NftCardPreview>
+const meta = { title: 'Marketplace/Molecules/NFT card', component: NftCardPreview, args: { nft: catalogFixture[0], index: 2 }, decorators: [(Story) => <div className="w-[300px]"><Story/></div>], tags: ['autodocs'], parameters: { docs: { description: { component: 'Prévia visual isolada com fixture local. O botão alterna aria-pressed e o ícone; a persistência por sessão é exercitada no aplicativo e nos testes E2E.' } } } } satisfies Meta<typeof NftCardPreview>
 export default meta
 type Story = StoryObj<typeof meta>
 export const Default: Story = {}
+export const EdicaoComum: Story = { args: { index: 0 } }
