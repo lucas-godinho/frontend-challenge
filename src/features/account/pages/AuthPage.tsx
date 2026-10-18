@@ -44,6 +44,9 @@ export function AuthPage({ mode, presentation = 'page', returnTo: returnToProp, 
   const isRegister = mode === 'register'
   const pending = isRegister ? actions.register.isPending : actions.login.isPending
   const returnTo = returnToProp ?? safeReturnPath()
+  // As rotas /login e /register esperam `{ returnTo: string | undefined }`,
+  // então a chave precisa estar sempre presente (nunca `{}`).
+  const authSearch = { returnTo: returnTo ?? undefined }
   const navigate = useNavigate()
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.matchMedia(desktopQuery).matches)
   const isDialog = presentation === 'dialog'
@@ -101,9 +104,9 @@ export function AuthPage({ mode, presentation = 'page', returnTo: returnToProp, 
       {isDialog && <Button variant="ghost" size="icon" className="absolute right-2 top-2 z-10 size-9 text-primary" type="button" aria-label="Fechar janela de autenticação" onClick={closeDialog}><X size={17}/></Button>}
       <div className={cn('mb-16 text-center text-2xl font-bold tracking-[.14em] text-foreground', isDialog && 'mb-6 text-xl') } aria-hidden="true">KURIO</div>
       <h1 id="auth-title" className={cn('mb-7 flex items-center justify-center gap-1.5 text-base font-bold', isDialog && 'mb-4 text-base font-normal')}>
-        <Button variant="ghost" className={cn('h-auto min-h-0 rounded-none px-0 py-0 text-base font-bold', isDialog && 'text-sm font-normal', !isRegister && 'text-primary')} type="button" aria-pressed={!isRegister} onClick={() => { if (isRegister) { if (onModeChange) onModeChange('login'); else void navigate({ to: '/login', search: returnTo ? { returnTo } : {} }) } }}>Entrar</Button>
+        <Button variant="ghost" className={cn('h-auto min-h-0 rounded-none px-0 py-0 text-base font-bold', isDialog && 'text-sm font-normal', !isRegister && 'text-primary')} type="button" aria-pressed={!isRegister} onClick={() => { if (isRegister) { if (onModeChange) onModeChange('login'); else void navigate({ to: '/login', search: authSearch }) } }}>Entrar</Button>
         {isDialog && <span className="text-muted-foreground">|</span>}
-        {isDialog && <Button variant="ghost" className={cn('h-auto min-h-0 rounded-none px-0 py-0 text-sm font-normal', isRegister && 'text-primary')} type="button" aria-pressed={isRegister} onClick={() => { if (!isRegister) { if (onModeChange) onModeChange('register'); else void navigate({ to: '/register', search: returnTo ? { returnTo } : {} }) } }}>Criar conta</Button>}
+        {isDialog && <Button variant="ghost" className={cn('h-auto min-h-0 rounded-none px-0 py-0 text-sm font-normal', isRegister && 'text-primary')} type="button" aria-pressed={isRegister} onClick={() => { if (!isRegister) { if (onModeChange) onModeChange('register'); else void navigate({ to: '/register', search: authSearch }) } }}>Criar conta</Button>}
       </h1>
       {isDialog && <p className="mx-auto mb-5 mt-0 max-w-[300px] text-center text-sm leading-relaxed text-muted-foreground">{isRegister ? 'Crie seu perfil de colecionador e conecte uma carteira quando quiser.' : 'Entre para gerenciar sua carteira, coleção e perfil de criador.'}</p>}
       {message && <p className="mb-4 border border-destructive/45 bg-destructive/10 px-3 py-2.5 text-sm text-[#ffb4a4]" role="alert">{message}</p>}
@@ -119,8 +122,8 @@ export function AuthPage({ mode, presentation = 'page', returnTo: returnToProp, 
       <div className="my-7 flex items-center gap-2.5 text-xs text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">Ou continue com</div>
       <div className="grid gap-2"><Button variant="outline" className="h-11 rounded border-border text-sm text-muted-foreground hover:bg-primary/10" type="button" onClick={() => setMessage('A autenticação social estará disponível na integração final.')}><b className="font-sans text-base text-[#4285f4]">G</b>Continuar com Google</Button><Button variant="outline" className="h-11 rounded border-border text-sm text-muted-foreground hover:bg-primary/10" type="button" onClick={() => setMessage('A autenticação social estará disponível na integração final.')}><b className="font-sans text-base text-[#1877f2]">f</b>Continuar com Facebook</Button></div>
       <p className="mt-9 text-center text-sm text-muted-foreground">{isRegister ? 'Já tem uma conta?' : 'Novo na Kurio?'}{' '}{isRegister
-        ? onModeChange ? <Button variant="ghost" className="ml-1 h-auto min-h-0 px-0 py-0 text-sm text-primary underline underline-offset-[3px]" type="button" onClick={() => onModeChange('login')}>Entre</Button> : <Link className="ml-1 text-primary underline underline-offset-[3px]" to="/login" search={returnTo ? { returnTo } : {}}>Entre</Link>
-        : onModeChange ? <Button variant="ghost" className="ml-1 h-auto min-h-0 px-0 py-0 text-sm text-primary underline underline-offset-[3px]" type="button" onClick={() => onModeChange('register')}>Crie uma conta</Button> : <Link className="ml-1 text-primary underline underline-offset-[3px]" to="/register" search={returnTo ? { returnTo } : {}}>Crie uma conta</Link>}</p>
+        ? onModeChange ? <Button variant="ghost" className="ml-1 h-auto min-h-0 px-0 py-0 text-sm text-primary underline underline-offset-[3px]" type="button" onClick={() => onModeChange('login')}>Entre</Button> : <Link className="ml-1 text-primary underline underline-offset-[3px]" to="/login" search={authSearch}>Entre</Link>
+        : onModeChange ? <Button variant="ghost" className="ml-1 h-auto min-h-0 px-0 py-0 text-sm text-primary underline underline-offset-[3px]" type="button" onClick={() => onModeChange('register')}>Crie uma conta</Button> : <Link className="ml-1 text-primary underline underline-offset-[3px]" to="/register" search={authSearch}>Crie uma conta</Link>}</p>
     </Dialog>
   </main>
   return isDialog ? createPortal(content, document.body) : content
