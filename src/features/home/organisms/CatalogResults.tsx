@@ -19,7 +19,7 @@ export function CatalogResults({ state, renderCard }: {
   if (state.status === 'loading') return <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4" aria-label="Carregando catálogo" aria-busy="true" role="status">
     {['/images/nft-1.jpg', '/images/nft-2.jpg', '/images/nft-3.jpg', '/images/nft-4.jpg'].map((image, index) => <Card className="grid gap-3 overflow-hidden rounded-md border-0 bg-card p-2" key={image}>
       <div className="aspect-square overflow-hidden rounded-sm bg-muted">
-        <img className="size-full animate-[nft-loading-float_2.4s_ease-in-out_infinite] object-cover motion-reduce:animate-none" style={{ animationDelay: `${index * -180}ms` }} src={image} alt="" fetchPriority={index === 0 ? 'high' : 'auto'} decoding="async"/>
+        <img className="size-full object-cover" src={image} alt="" fetchPriority={index === 0 ? 'high' : 'auto'} decoding="async"/>
       </div>
       <div className="grid gap-2 px-2 pb-2"><Skeleton className="h-3 w-2/3"/><Skeleton className="h-4 w-4/5"/><Skeleton className="h-4 w-1/3"/></div>
     </Card>)}

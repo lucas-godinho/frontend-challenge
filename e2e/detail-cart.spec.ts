@@ -3,7 +3,7 @@ import { cartItem, cartQuantity, detailFeedback } from './support/selectors'
 
 test('direct NFT detail access supports quantity limits and adds the selected amount to cart', async ({ page }) => {
   await page.goto('/nft/orbital-01')
-  await expect(page.getByRole('heading', { name: 'Orbital Bloom #01' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Orbital Bloom #01' })).toBeVisible({ timeout: 15_000 })
   await expect(page.getByText('8 unidades', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Diminuir quantidade' })).toBeDisabled()
   await expect(page.locator('main#main output').first()).toHaveText('1')

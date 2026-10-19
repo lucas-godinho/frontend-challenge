@@ -56,7 +56,7 @@ export function AppShell() {
   }
   const closeAuth = useCallback(() => setAuthMode(null), [])
 
-  return <div className={cn('min-h-screen', !isMobileAuthRoute && 'max-[760px]:pb-[142px]')}>
+  return <div className={cn('min-h-screen', !isMobileAuthRoute && 'max-[760px]:pb-[calc(142px+env(safe-area-inset-bottom,0px))]')}>
     <a className="fixed -left-full top-4 z-50 bg-popover p-3 text-foreground focus:left-4" href="#main">Pular para o conteúdo</a>
     <header className="mx-auto hidden h-[76px] w-[90%] items-center justify-between border-b border-border min-[761px]:flex min-[1051px]:grid min-[1051px]:h-[70px] min-[1051px]:w-[min(calc(100%-240px),1200px)] min-[1051px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] min-[1051px]:gap-6">
       <Link to="/" className="justify-self-start font-display text-2xl font-bold tracking-[-1.5px] min-[1051px]:text-base min-[1051px]:tracking-normal">Kurio<span className="ml-0.5 align-top text-[10px] text-primary min-[1051px]:hidden">®</span></Link>

@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { createRequire } from 'node:module'
@@ -54,8 +55,9 @@ try {
     for (const name of pageNames) {
       for (let run = 1; run <= runs; run++) {
         const port = await freePort()
+        const systemChrome = ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'].find((candidate) => existsSync(candidate))
         const browser = await chromium.launch({
-          executablePath: process.env.CHROME_PATH || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+          executablePath: process.env.CHROME_PATH || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || systemChrome || undefined,
           headless: true,
           args: [`--remote-debugging-port=${port}`, '--disable-extensions'],
         })

@@ -2,25 +2,10 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#140D0A" />
     <meta name="description" content="Explore uma curadoria de NFTs e descubra sua próxima peça." />
-    <script>
-      const path = window.location.pathname
-      const params = new URLSearchParams(window.location.search)
-      const defaultCatalog = path === '/' && (!params.has('q') && !params.has('category') && !params.has('network') && !params.has('minPrice') && !params.has('maxPrice')) && (params.get('sort') === null || params.get('sort') === 'recent') && (params.get('page') === null || params.get('page') === '1')
-      const image = defaultCatalog
-        ? (window.matchMedia('(max-width: 760px)').matches ? '/images/nft-3.jpg' : '/images/nft-2.jpg')
-        : path === '/nft/orbital-01' ? '/images/nft-1.jpg' : null
-      if (image) {
-        const preload = document.createElement('link')
-        preload.rel = 'preload'
-        preload.as = 'image'
-        preload.href = image
-        preload.fetchPriority = 'high'
-        document.head.append(preload)
-      }
-    </script>
+    <link rel="preload" as="image" href="/images/nft-1.jpg" fetchpriority="high" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Kurio — NFT Marketplace</title>
   </head>
@@ -41,13 +26,14 @@
         @keyframes boot-art-float{from{translate:0 0}to{translate:0 -8px}}
         @keyframes boot-progress{from{translate:-100% 0}to{translate:220% 0}}
         @media(prefers-reduced-motion:reduce){#boot-loader img,#boot-loader .boot-progress::after{animation:none}}
+        @media(max-width:760px){#boot-loader{display:none}}
       </style>
       <div class="boot-content">
         <span class="boot-wordmark">KURIO</span>
         <div class="boot-artwork" aria-hidden="true">
-          <img src="/images/nft-3.jpg" alt="" fetchpriority="high" />
-          <img src="/images/nft-1.jpg" alt="" fetchpriority="high" />
-          <img src="/images/nft-2.jpg" alt="" fetchpriority="high" />
+          <img src="/images/nft-3.jpg" alt="" fetchpriority="low" loading="lazy" />
+          <img src="/images/nft-1.jpg" alt="" fetchpriority="low" loading="lazy" />
+          <img src="/images/nft-2.jpg" alt="" fetchpriority="low" loading="lazy" />
         </div>
         <p class="boot-message">Preparando sua próxima descoberta</p>
         <div class="boot-progress" aria-hidden="true"></div>

@@ -3,6 +3,30 @@
 @import "@fontsource/roboto-mono/latin-700.css";
 @import "tailwindcss";
 
+/* Ensure fonts load non-blocking so they don't contribute to LCP delay */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Roboto Mono'), local('RobotoMono-Regular');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Roboto Mono Medium'), local('RobotoMono-Medium');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Roboto Mono Bold'), local('RobotoMono-Bold');
+}
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -210,6 +234,7 @@ body {
   min-width: 320px;
   background: var(--background);
   color: var(--foreground);
+  overflow-x: clip;
 }
 button, input, select {
   font: inherit;

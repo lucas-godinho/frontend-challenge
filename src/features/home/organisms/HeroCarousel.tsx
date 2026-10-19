@@ -40,7 +40,7 @@ export function HeroCarousel({
   const secondArtwork = items.length > 1 ? items[(activeSlide * 2 + 1) % items.length] : firstArtwork
 
   return <section
-    className="relative isolate grid min-h-[470px] grid-cols-[minmax(300px,.86fr)_minmax(0,1.14fr)] items-center gap-[clamp(36px,7.5vw,112px)] py-[clamp(60px,7vw,104px)] before:absolute before:-z-10 before:right-[-8%] before:top-[12%] before:aspect-square before:w-[min(60vw,780px)] before:rounded-full before:bg-[radial-gradient(circle,rgb(210_138_76_/_10%),transparent_68%)] before:content-[''] max-[760px]:-mx-2.5 max-[760px]:mt-3 max-[760px]:block max-[760px]:h-[190px] max-[760px]:min-h-0 max-[760px]:overflow-hidden max-[760px]:rounded-[30px] max-[760px]:px-[26px] max-[760px]:py-4 max-[760px]:before:hidden min-[1051px]:min-h-[527px] min-[1051px]:grid-cols-[minmax(0,1fr)_450px] min-[1051px]:gap-16 min-[1051px]:py-8"
+    className="relative isolate grid min-h-[470px] overflow-clip grid-cols-[minmax(300px,.86fr)_minmax(0,1.14fr)] items-center gap-[clamp(36px,7.5vw,112px)] py-[clamp(60px,7vw,104px)] before:absolute before:-z-10 before:right-[-8%] before:top-[12%] before:aspect-square before:w-[min(60vw,780px)] before:rounded-full before:bg-[radial-gradient(circle,rgb(210_138_76_/_10%),transparent_68%)] before:content-[''] max-[760px]:-mx-2.5 max-[760px]:mt-3 max-[760px]:block max-[760px]:h-[190px] max-[760px]:min-h-0 max-[760px]:overflow-hidden max-[760px]:rounded-[30px] max-[760px]:px-[26px] max-[760px]:py-4 max-[760px]:before:hidden min-[1051px]:min-h-[527px] min-[1051px]:grid-cols-[minmax(0,1fr)_450px] min-[1051px]:gap-16 min-[1051px]:py-8"
     aria-roledescription="carousel"
     aria-label="Destaques da Kurio"
     onMouseEnter={() => setIsPaused(true)}

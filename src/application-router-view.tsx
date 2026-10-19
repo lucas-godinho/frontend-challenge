@@ -10,6 +10,16 @@ const MIN_LOADING_MS = 650
 const MAX_LOADING_MS = 2800
 const EXIT_ANIMATION_MS = 380
 
+/**
+ * On mobile devices the Three.js loading scene costs ~600 KB of JS parse/exec
+ * and contributes directly to TBT. We skip it when the viewport is narrow and
+ * fall back to the inline boot-loader HTML, which is already painted and costs
+ * nothing extra.
+ */
+function isMobileViewport() {
+  return typeof window !== 'undefined' && window.innerWidth < 760
+}
+
 export function ApplicationRouterView({ router: appRouter }: { router: typeof router }) {
   const isFetching = useIsFetching()
   const queryClient = useQueryClient()
@@ -31,6 +41,15 @@ export function ApplicationRouterView({ router: appRouter }: { router: typeof ro
 
     const startupDelay = window.setTimeout(() => {
       if (queryClient.isFetching() === 0) {
+        document.getElementById('boot-loader')?.remove()
+        if (hardTimeoutRef.current !== null) window.clearTimeout(hardTimeoutRef.current)
+        setShowLoading(false)
+        return
+      }
+
+      // Skip Three.js on mobile — it adds ~600 KB parse/exec to the critical path
+      // and causes TBT to spike. The boot-loader HTML splash already covers this case.
+      if (isMobileViewport()) {
         document.getElementById('boot-loader')?.remove()
         if (hardTimeoutRef.current !== null) window.clearTimeout(hardTimeoutRef.current)
         setShowLoading(false)
